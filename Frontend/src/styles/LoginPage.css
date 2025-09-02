@@ -1,0 +1,168 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 440px;
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.login-header h1 {
+  font-size: 2.5em;
+  color: #000000;
+}
+
+.login-form-container {
+  display: flex;
+  justify-content: center;
+}
+
+.glassmorphism-form {
+  width: 100%;
+}
+
+.text-center {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.images {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 10px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.labell {
+  margin-bottom: 5px;
+  color: #000000;
+}
+
+.inputt-container {
+  position: relative;
+  justify-content: space-between;
+  display: flex;
+  margin-bottom: 15px;
+  align-items: center;
+}
+
+.input-login {
+  width: 100%;
+  padding: 10px 40px 10px 36px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  transition: border-color 0.3s ease;
+}
+
+.input-login:focus {
+  border-color: #000000;
+  outline: none;
+}
+
+.password-toggle {
+  background: none;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.inputt-container {
+  position: relative;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.remember-me input {
+  margin-right: 5px;
+}
+
+.submit-btnn {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.submit-btnn:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.submit-btnn:active {
+  transform: translateY(0);
+}
+
+.signup-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}
+
+.text-center p {
+  color: #666;
+  margin-top: 15px;
+  font-size: 15px;
+  text-align: center;
+}
+
+.login-footer {
+  text-align: center;
+  font-size: 14px;
+  color: #999;
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px; 
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f0f0f0;
+  border-top: 3px solid #111111;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+

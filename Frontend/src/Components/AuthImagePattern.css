@@ -1,0 +1,54 @@
+.auth-container {
+    display: none;
+  }
+  
+  @media (min-width: 1024px) { 
+    .auth-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f5f7fa;
+      padding: 3rem;
+    }
+  }
+  
+  .auth-content {
+    max-width: 320px;
+    text-align: center;
+  }
+  
+  .image-grid {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 2rem;
+  }
+  
+  .grid-item {
+    aspect-ratio: 1;
+    border-radius: 12px;
+    background: rgba(0, 150, 255, 0.1);
+  }
+  
+  .pulse {
+    animation: pulse-animation 1.5s infinite alternate;
+  }
+  
+  @keyframes pulse-animation {
+    from {
+      opacity: 0.5;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  .auth-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  
+  .auth-subtitle {
+    color: rgba(0, 0, 0, 0.6);
+  }
+  

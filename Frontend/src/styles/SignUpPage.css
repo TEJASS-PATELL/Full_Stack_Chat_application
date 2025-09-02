@@ -1,0 +1,156 @@
+.loginnn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.signup-container {
+  background: #ffffff;
+  width: 100%;
+  max-width: 440px;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.signup-form h1 {
+  text-align: center;
+  color: #000000;
+}
+
+.input-group {
+  margin-bottom: 18px;
+}
+
+.signup-subtext {
+  font-size: 15px;
+  color: #666;
+  margin-top: 5px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.signup-form p{
+  font-size: 15px;
+  color: #666;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+
+.input-group label {
+  font-size: 14px;
+  margin-bottom: 6px;
+  display: block;
+  color: #000000;
+}
+
+.input-wrapper {
+  position: relative;
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 10px 40px 10px 36px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  transition: border-color 0.3s ease;
+}
+
+.input-wrapper input:focus {
+  border-color: #000000;
+  outline: none;
+}
+
+.input-icon {
+  position: absolute;
+  left: 10px;
+  color: #888;
+  width: 20px;
+  height: 20px;
+}
+
+.toggle-password {
+  font-size: 1rem;
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #000000;
+}
+
+.submit-btn {
+  padding: 12px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.submit-btn:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+.submit-btn.disabled {
+  background-color: #7aa7df;
+  cursor: not-allowed;
+}
+
+.loader {
+  animation: spin 1s linear infinite;
+  width: 18px;
+  height: 18px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.login-redirect {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #666;
+}
+
+.login-redirect a {
+  color: #007bff;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.login-redirect a:hover {
+  text-decoration: underline;
+}
+
+footer {
+  text-align: center;
+  font-size: 13px;
+  color: #999;
+}
