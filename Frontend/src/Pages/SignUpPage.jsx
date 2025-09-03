@@ -61,7 +61,7 @@ const SignUpPage = () => {
         <main>
           <form className="signup-form" onSubmit={handleSubmit}>
             <h1>Create an Account</h1>
-            <p class="signup-subtext">It only takes a few seconds to get started!</p>
+            <p className="signup-subtext">It only takes a few seconds to get started!</p>
             <div className="input-group">
               <label>Full Name</label>
               <div className="input-wrapper">
