@@ -131,7 +131,6 @@ const logout = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
 
   } finally {
-    // ✅ Always release connection if opened
     if (connection) connection.release();
   }
 };
