@@ -1,7 +1,6 @@
 const { Server } = require("socket.io");
 const http = require("http");
 const express = require("express");
-const cors = require("cors");
 const db = require("../lib/db");
 
 const app = express();

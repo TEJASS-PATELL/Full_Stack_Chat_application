@@ -11,7 +11,7 @@ const compression = require("compression");
 const { server, app } = require("./lib/socket"); 
 
 app.use(cors({
-  origin: ["http://localhost:5174", "http://localhost:5173"],
+  origin: ["http://localhost:5174", "http://localhost:5173", process.env.CLIENT_URL],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
