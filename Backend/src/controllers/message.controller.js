@@ -1,12 +1,15 @@
-const db = require("../lib/db");
+const pool = require("../lib/db"); 
 const cloudinary = require("../lib/cloudinary");
 const { getReceiverSocketId, io } = require("../lib/socket");
 
 const getUsersForSidebar = async (req, res) => {
+  let connection;
   try {
+    connection = await pool.getConnection(); 
+
     const loggedInUserId = req.user.id;
 
-    const [filteredUsers] = await db.execute(
+    const [filteredUsers] = await connection.execute(
       `SELECT id, fullname, email, profilepic, createdat, isOnline, lastSeen
        FROM users 
        WHERE id != ?`, 
@@ -17,6 +20,10 @@ const getUsersForSidebar = async (req, res) => {
   } catch (error) {
     console.error("Error in getUsersForSidebar:", error.message);
     res.status(500).json({ error: "Internal server error" });
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 };
 
