@@ -24,6 +24,7 @@ pnpm-debug.log*
 # =========================
 .DS_Store
 Thumbs.db
+ca.pem
 
 # =========================
 # Local database (SQLite, etc.)

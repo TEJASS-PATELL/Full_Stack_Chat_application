@@ -24,6 +24,11 @@ app.use(compression());
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", looseLimiter, messageRoutes);
 app.use("/api/chat-lock", chatLockRoutes);
+app.use((err, req, res, next) => {
+  console.error("Server Error:", err.stack);
+  res.status(500).json({ message: "Something went wrong!" });
+});
+
 
 const PORT = process.env.PORT || 5001;
 
