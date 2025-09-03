@@ -8,7 +8,7 @@ export default defineConfig({
     target: "esnext",
     rollupOptions: {
       plugins: [
-        NodeGlobalsPolyfillPlugin({        // ✅ Polyfill for `global`
+        NodeGlobalsPolyfillPlugin({        
           process: true,
           buffer: true,
         }),
@@ -18,7 +18,7 @@ export default defineConfig({
   optimizeDeps: {
     esbuildOptions: {
       define: {
-        global: "globalThis",             // ✅ Add global reference
+        global: "globalThis",           
       },
       plugins: [
         NodeGlobalsPolyfillPlugin({
