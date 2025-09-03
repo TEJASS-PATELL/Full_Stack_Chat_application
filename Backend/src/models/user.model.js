@@ -1,8 +1,9 @@
-const db = require("../lib/db");  
+const pool = require("../lib/db"); 
 
 async function ConnectUser() {
+  let connection;
   try {
-    const connection = await db.getConnection(); 
+    connection = await pool.getConnection();
 
     await connection.query(`
       CREATE TABLE IF NOT EXISTS users (
@@ -17,13 +18,15 @@ async function ConnectUser() {
       );
     `);
 
-    connection.release();
     console.log("Users table checked/created successfully.");
   } catch (err) {
     console.error("Error creating users table:", err.message);
+    throw err; 
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 }
-
-ConnectUser();
 
 module.exports = ConnectUser;

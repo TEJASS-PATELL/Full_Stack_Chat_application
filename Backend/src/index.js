@@ -9,6 +9,7 @@ const helmet = require("helmet");
 require("dotenv").config();
 const compression = require("compression");
 const { server, app } = require("./lib/socket"); 
+const ConnectUser = require("./models/user.model");
 
 app.use(cors({
   origin: [process.env.CLIENT_URL, "http://localhost:5174", "http://localhost:5173"],
@@ -32,7 +33,13 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5001;
 
-server.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+server.listen(PORT, async () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  try {
+    await ConnectUser();
+    console.log("Database & Users table initialized");
+  } catch (err) {
+    console.error("Database initialization failed:", err.message);
+  }
 });
 

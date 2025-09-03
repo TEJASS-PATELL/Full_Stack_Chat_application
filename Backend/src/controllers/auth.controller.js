@@ -1,7 +1,6 @@
 const db = require("../lib/db"); 
 const { generateToken } = require("../lib/utils");
 const bcrypt = require("bcryptjs");
-const cloudinary = require("../lib/cloudinary");
 
 const signup = async (req, res) => {
   const { fullname, email, password } = req.body;
@@ -15,29 +14,24 @@ const signup = async (req, res) => {
       return res.status(400).json({ message: "Password must be at least 6 characters" });
     }
 
-    const connection = await db.getConnection();
-
-    const [existingUser] = await connection.execute(
-      `SELECT * FROM users WHERE email = ?`,
+    const [existingUser] = await db.query(
+      `SELECT id FROM users WHERE email = ?`,
       [email]
     );
 
     if (existingUser.length > 0) {
-      connection.release();
       return res.status(400).json({ message: "Email already exists" });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const [result] = await connection.execute(
+    const [result] = await db.query(
       `INSERT INTO users (fullname, email, password) VALUES (?, ?, ?)`,
       [fullname, email, hashedPassword]
     );
 
-    connection.release();
-
     const newUserId = result.insertId;
+
     generateToken(newUserId, res);
 
     res.status(201).json({
@@ -48,7 +42,7 @@ const signup = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Error in signup controller:", error.message);
+    console.error("Error in signup controller:", error.stack);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
