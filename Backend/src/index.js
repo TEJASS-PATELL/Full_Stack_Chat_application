@@ -25,6 +25,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/messages", looseLimiter, messageRoutes);
 app.use("/api/chat-lock", chatLockRoutes);
 
-server.listen(process.env.PORT, () => {
-  console.log(`Server running on http://localhost:${process.env.PORT}`);
+const PORT = process.env.PORT || 5001;
+
+server.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
+
