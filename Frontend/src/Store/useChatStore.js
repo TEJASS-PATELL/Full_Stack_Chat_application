@@ -15,7 +15,6 @@ export const useChatStore = create(
       isUsersLoading: false,
       isMessagesLoading: false,
       typingUserId: null,
-      lockedChats: [],
       unreadMessages: {},
 
       setTypingUserId: (id) => set({ typingUserId: id }),
@@ -124,7 +123,6 @@ export const useChatStore = create(
           set({ selectedUser: null });
           return;
         }
-
         set((state) => {
           const updatedUnread = { ...state.unreadMessages };
           delete updatedUnread[selectedUser.id];
@@ -142,50 +140,7 @@ export const useChatStore = create(
             [userId]: true,
           },
       })),
-
-      lockChat: async (userId, pin) => {
-        try {
-          await axiosInstance.post("/chat-lock/lock", {
-            lockedUserId: userId,
-            pin: pin,
-          });
-          set((state) => ({
-            lockedChats: [...state.lockedChats, userId],
-          }));
-          toast.success("Chat locked");
-        } catch (err) {
-          console.error("Lock failed", err);
-          toast.error("Failed to lock chat");
-        }
-      },
-
-      unlockChat: async (userId, pin) => {
-        try {
-          const res = await axiosInstance.post("/chat-lock/unlock", {
-            lockedUserId: userId,
-            pin: pin,
-          });
-
-          if (res.data.success) {
-            set((state) => ({
-              lockedChats: state.lockedChats.filter((id) => id !== userId),
-            }));
-            toast.success("Chat unlocked");
-            return true;
-          } else {
-            toast.error("Incorrect PIN");
-            return false;
-          }
-        } catch (err) {
-          console.error("Unlock failed", err);
-          toast.error("Error verifying PIN");
-          return false;
-        }
-      },
-
-      isChatLocked: (userId) => {
-        return get().lockedChats.includes(userId);
-      },
+      
     }),
     {
       name: "chat-store",

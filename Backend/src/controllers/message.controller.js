@@ -47,38 +47,31 @@ const sendMessage = async (req, res) => {
     const senderId = req.user.id;
 
     let imageUrl = null;
-
-    // ✅ Upload image to Cloudinary if provided
     if (image) {
       const uploadResponse = await cloudinary.uploader.upload(image);
       imageUrl = uploadResponse.secure_url;
     }
-
-    // ✅ Insert new message into MySQL with seen = false
     const [result] = await db.execute(
       `INSERT INTO messages (senderId, receiverId, text, image, seen) 
        VALUES (?, ?, ?, ?, ?)`,
-      [senderId, receiverId, text, imageUrl, false] // 👈 Add seen = false
+      [senderId, receiverId, text, imageUrl, false] 
     );
-
-    // ✅ Create newMessage object
     const newMessage = {
       id: result.insertId,
       senderId,
       receiverId,
       text,
       image: imageUrl,
-      seen: false, // 👈 Add seen in response
+      seen: false, 
       createdAt: new Date().toISOString(),
     };
 
-    // ✅ Real-time emit to receiver if online
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
     }
 
-    res.status(201).json(newMessage); // 👈 Return with seen: false
+    res.status(201).json(newMessage); 
   } catch (error) {
     console.error("Error in sendMessage controller:", error.message);
     res.status(500).json({ error: "Internal server error" });
