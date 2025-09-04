@@ -21,7 +21,6 @@ const ProfilePage = () => {
       setSelectedImg(base64Image);
       try {
         await updateProfile({ profilepic: base64Image });
-        toast.success("Profile picture updated successfully!");
       } catch (error) {
         toast.error("Failed to update profile picture.");
       }

@@ -114,11 +114,6 @@
 
 .submit-btnn:hover {
   background-color: #0056b3;
-  transform: translateY(-1px);
-}
-
-.submit-btnn:active {
-  transform: translateY(0);
 }
 
 .signup-link {
@@ -166,3 +161,8 @@
   }
 }
 
+@media (max-width: 480px){
+  .login-container{
+      box-shadow:none;
+  }
+}
