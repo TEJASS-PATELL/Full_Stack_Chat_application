@@ -9,6 +9,7 @@ async function createMessagesTable() {
         receiverid INT NOT NULL,
         text TEXT,
         image VARCHAR(5000),
+        seen BOOLEAN DEFAULT false,
         createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         CONSTRAINT fk_sender FOREIGN KEY (senderid) REFERENCES users(id) ON DELETE CASCADE,
         CONSTRAINT fk_receiver FOREIGN KEY (receiverid) REFERENCES users(id) ON DELETE CASCADE
