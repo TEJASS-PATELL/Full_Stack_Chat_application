@@ -1,6 +1,3 @@
-import React from "react";
-import "./LockModal.css"; 
-
 const LockModal = ({
   setShowLockModal,
   pinInput,
