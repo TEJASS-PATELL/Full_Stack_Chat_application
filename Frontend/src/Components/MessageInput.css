@@ -9,6 +9,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: nowrap;
 }
 
 .message-input-field {
@@ -20,6 +21,7 @@
   font-size: 14px;
   outline: none;
   transition: border-color 0.2s ease;
+  min-width: 0;
 }
 
 .message-input-field:focus {
@@ -33,6 +35,7 @@
   padding: 8px;
   border-radius: 50%;
   transition: background 0.2s ease;
+  flex-shrink: 0;
 }
 
 .icon-btn:hover {
@@ -44,7 +47,7 @@
   cursor: not-allowed;
 }
 
-.emoji-btn{
+.emoji-btn {
   color: #000000;
 }
 
@@ -52,13 +55,17 @@
   margin-bottom: 8px;
   display: flex;
   justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .preview-image {
-  max-height: 120px;
+  max-height: 100px;
+  max-width: 100px;
   border-radius: 12px;
   object-fit: cover;
   border: 1px solid #ddd;
+  position: relative;
 }
 
 .remove-button {
@@ -84,6 +91,8 @@
   background-color: white;
   border-radius: 10px;
   overflow: hidden;
+  max-width: 90vw;
+  max-height: 50vh;
 }
 
 .emoji-picker-header {
@@ -96,4 +105,55 @@
 
 .file-input {
   display: none;
+}
+
+@media (max-width: 768px) {
+  .message-form {
+    gap: 6px;
+  }
+
+  .message-input-field {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .icon-btn {
+    padding: 6px;
+  }
+
+  .preview-image {
+    max-height: 80px;
+    max-width: 80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .message-input {
+    padding: 10px;
+  }
+
+  .message-form {
+    gap: 5px;
+  }
+
+  .message-input-field {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .icon-btn {
+    padding: 5px;
+  }
+
+  .emoji-picker {
+    bottom: 55px;
+    right: 5px;
+    max-width: 95vw;
+    max-height: 45vh;
+  }
+
+  .preview-image {
+    max-height: 70px;
+    max-width: 70px;
+  }
 }

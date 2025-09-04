@@ -155,7 +155,7 @@
 
 @media (max-width: 480px) {
   .chat-header {
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-start;
     gap: 0.5rem;
   }
@@ -178,8 +178,8 @@
   }
 
   .btn-icon {
-    width: 16px;
-    height: 16px;
+    width: 15px;
+    height: 15px;
   }
 
   .chatbot-continerrr {
