@@ -12,7 +12,7 @@
   display: none;
   position: absolute;
   top: 15px;
-  left: 360px;
+  left: 200px;
   z-index: 1100;
   color: black;
   background-color: transparent;
@@ -352,6 +352,11 @@
   .lock-chat {
     left: 80%;
   }
+
+  .hamburger-btn{
+    left: 200px
+  }
+
 }
 
 .sidebar-lastseen-only {
@@ -374,3 +379,4 @@
   color: #ff0000; 
    font-weight: 600;
 }
+
