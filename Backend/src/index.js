@@ -9,9 +9,9 @@ const helmet = require("helmet");
 require("dotenv").config();
 const compression = require("compression");
 const { server, app } = require("./lib/socket");
-const ConnectUser = require("./models/ConnectUser");
-const createMessagesTable = require("./models/createMessagesTable");
-const ChatLock = require("./models/ChatLock");
+const ConnectUser = require("./models/user.model");
+const createMessagesTable = require("./models/message.model");
+const ChatLock = require("./models/chatlock.model");
 
 app.use(cors({
   origin: [process.env.CLIENT_URL, "http://localhost:5174", "http://localhost:5173"],
