@@ -70,27 +70,13 @@ export const useChatStore = create(
         }
       },
 
-      markMessagesAsSeen: async (userId) => {
-        try {
-          await axiosInstance.post(`/messages/mark-seen/${userId}`);
-          set((state) => ({
-            messages: state.messages.map((msg) =>
-              msg.senderId === userId ? { ...msg, seen: true } : msg
-            ),
-          }));
-        } catch (error) {
-          console.error("Failed to mark messages as seen", error);
-        }
-      },
-
       addMessage: (message) => {
-        const { selectedUser } = get();
-        const isFromSelectedUser = message.senderId === selectedUser?.id;
         set((state) => ({
-          messages: [...state.messages, isFromSelectedUser ? { ...message, seen: true } : message],
+          messages: [...state.messages, message],
         }));
 
-        if (!isFromSelectedUser) {
+        const { selectedUser } = get();
+        if (message.senderId !== selectedUser?.id) {
           get().addUnreadMessage(message.senderId);
         }
       },
@@ -112,9 +98,8 @@ export const useChatStore = create(
             msg.senderId === currentUser?.id || msg.receiverId === currentUser?.id;
 
           if (isForSelectedUser) {
-            const isFromCurrentUser = msg.senderId === currentUser?.id;
             set((state) => ({
-              messages: [...state.messages, { ...msg, seen: isFromCurrentUser }],
+              messages: [...state.messages, msg],
             }));
           } else {
             get().addUnreadMessage(msg.senderId);

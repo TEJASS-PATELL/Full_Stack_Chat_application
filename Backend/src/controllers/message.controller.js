@@ -26,7 +26,8 @@ const getMessages = async (req, res) => {
     const myId = req.user.id;
 
     const { rows: messages } = await pool.query(
-      `SELECT * FROM messages
+      `SELECT id, senderid, receiverid, text, image, createdat
+       FROM messages
        WHERE (senderid = $1 AND receiverid = $2) 
           OR (senderid = $2 AND receiverid = $1)
        ORDER BY createdat ASC`,
@@ -53,10 +54,10 @@ const sendMessage = async (req, res) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO messages (senderid, receiverid, text, image, seen)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING id, senderid, receiverid, text, image, seen, createdat`,
-      [senderId, receiverId, text, imageUrl, false]
+      `INSERT INTO messages (senderid, receiverid, text, image)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id, senderid, receiverid, text, image, createdat`,
+      [senderId, receiverId, text, imageUrl]
     );
 
     const newMessage = result.rows[0];
