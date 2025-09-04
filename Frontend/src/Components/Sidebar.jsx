@@ -22,7 +22,7 @@ const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const inputRefs = useRef([]);
 
-  const clickTimerRef = useRef(null); // Use ref to persist timer across renders
+  const clickTimerRef = useRef(null); 
 
   useEffect(() => {
     getUsers();
@@ -88,7 +88,7 @@ const Sidebar = () => {
       }
       setIsSidebarOpen(false);
       clickTimerRef.current = null;
-    }, 200); // single click delay
+    }, 200);
   };
 
   const handleUserDoubleClick = (e, userId) => {
@@ -104,7 +104,7 @@ const Sidebar = () => {
   return (
     <>
       <button className="hamburger-btn" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-        <FaBars size={24} />
+        <FaBars />
       </button>
 
       <div className={`sidebarr ${isSidebarOpen ? "open" : ""}`}>

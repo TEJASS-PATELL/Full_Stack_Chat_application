@@ -11,13 +11,13 @@
 .hamburger-btn {
   display: none;
   position: absolute;
-  top: 26px;
+  top: 15px;
   left: 360px;
   z-index: 1100;
   color: black;
   background-color: transparent;
   border: none;
-  font-size: 24px;
+  font-size: 18px;
   padding: 8px 12px;
   cursor: pointer;
 }
@@ -257,11 +257,17 @@
   transition: border-color 0.2s;
 }
 
+.modal-actions{
+  display:flex;
+
+}
+
 .pin-input-container input:focus {
   border-color: #000000;
 }
 
 .modal-content button {
+  margin-top:20px;
   padding: 10px 20px;
   border: none;
   background-color: #000000;
@@ -270,15 +276,6 @@
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s;
-}
-
-.modal-content button:last-child {
-  background-color: #e5e7eb;
-  color: #111827;
-}
-
-.modal-content button:last-child:hover {
-  background-color: #d1d5db;
 }
 
 @keyframes fadeInUp {

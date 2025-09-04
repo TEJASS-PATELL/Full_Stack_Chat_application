@@ -29,7 +29,7 @@ const LockModal = ({
         </div>
 
         <div className="modal-actions">
-          <button className="submit-btn" onClick={handlePinSubmit}>
+          <button onClick={handlePinSubmit}>
             Submit
           </button>
           <button
