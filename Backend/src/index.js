@@ -27,8 +27,9 @@ app.use(compression());
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", looseLimiter, messageRoutes);
 app.use("/api/chat-lock", chatLockRoutes);
+
 app.use((err, req, res, next) => {
-  console.error("Server Error:", err.stack);
+  console.error(err.stack);
   res.status(500).json({ message: "Something went wrong!" });
 });
 
@@ -41,7 +42,7 @@ server.listen(PORT, async () => {
     await ChatLock();
     console.log(`Server running on http://localhost:${PORT}`);
   } catch (err) {
-    console.error("Error initializing tables:", err.stack);
+    console.error(err.stack);
     process.exit(1);
   }
 });

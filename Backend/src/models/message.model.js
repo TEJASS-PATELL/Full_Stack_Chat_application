@@ -18,9 +18,8 @@ async function createMessagesTable() {
     console.log("Messages table checked/created successfully.");
   } catch (err) {
     console.error("Error creating messages table:", err.stack);
+    throw err;
   }
 }
-
-createMessagesTable();
 
 module.exports = createMessagesTable;
