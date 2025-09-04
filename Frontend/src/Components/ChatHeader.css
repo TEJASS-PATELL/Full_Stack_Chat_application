@@ -71,6 +71,10 @@
   padding-right: 10px;
 }
 
+.chat-controls{
+  display: flex;
+}
+
 .nav-btn {
   background-color: transparent;
   border: none;
