@@ -14,13 +14,16 @@ const Sidebar = () => {
   const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading, unreadMessages } = useChatStore();
   const { onlineUsers } = useAuthStore();
   const { fetchLockedChats, lockChat, unlockChat, isUserLocked } = useChatLockStore();
+
   const [viewType, setViewType] = useState("chat");
   const [showLockModal, setShowLockModal] = useState(false);
-  const [pinInput, setPinInput] = useState(["", "", "", "", "", ""]);
+  const [pinInput, setPinInput] = useState(Array(6).fill(""));
   const [currentLockUserId, setCurrentLockUserId] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const inputRefs = useRef([]);
-  
+
+  const clickTimerRef = useRef(null); // Use ref to persist timer across renders
+
   useEffect(() => {
     getUsers();
   }, []);
@@ -33,12 +36,13 @@ const Sidebar = () => {
     e.stopPropagation();
     setCurrentLockUserId(userId);
     setShowLockModal(true);
-    setPinInput(["", "", "", "", "", ""]);
+    setPinInput(Array(6).fill(""));
   };
 
   const handlePinChange = (e, index) => {
     const val = e.target.value;
     if (!/^\d?$/.test(val)) return;
+
     const updatedPin = [...pinInput];
     updatedPin[index] = val;
     setPinInput(updatedPin);
@@ -68,33 +72,29 @@ const Sidebar = () => {
     }
 
     setShowLockModal(false);
-    setPinInput(["", "", "", "", "", ""]);
+    setPinInput(Array(6).fill(""));
     setCurrentLockUserId(null);
   };
 
-  let clickTimer = null;
   const handleUserClick = (user) => {
-    if (clickTimer) {
-      clearTimeout(clickTimer);
-      clickTimer = null;
-    }
+    if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
 
-    clickTimer = setTimeout(() => {
+    clickTimerRef.current = setTimeout(() => {
       if (!isUserLocked(user.id)) {
         setSelectedUser(user);
       } else {
-        if (selectedUser?.id === user.id) setSelectedUser(null);
         setCurrentLockUserId(user.id);
         setShowLockModal(true);
       }
       setIsSidebarOpen(false);
-    }, 250);
+      clickTimerRef.current = null;
+    }, 200); // single click delay
   };
 
   const handleUserDoubleClick = (e, userId) => {
-    if (clickTimer) {
-      clearTimeout(clickTimer);
-      clickTimer = null;
+    if (clickTimerRef.current) {
+      clearTimeout(clickTimerRef.current);
+      clickTimerRef.current = null;
     }
     handleLockClick(e, userId);
   };

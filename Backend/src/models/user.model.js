@@ -1,31 +1,24 @@
-const pool = require("../lib/db"); 
+const pool = require("../lib/db");
 
 async function ConnectUser() {
-  let connection;
   try {
-    connection = await pool.getConnection();
-
-    await connection.query(`
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         fullname VARCHAR(255) NOT NULL,
         password VARCHAR(200) NOT NULL,
         email VARCHAR(255) NOT NULL UNIQUE,
         profilepic VARCHAR(500),
-        lastSeen DATETIME DEFAULT NULL,
+        lastseen TIMESTAMP DEFAULT NULL,
         createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        isOnline TINYINT(1) DEFAULT 0
+        isonline BOOLEAN DEFAULT FALSE
       );
     `);
 
     console.log("Users table checked/created successfully.");
   } catch (err) {
-    console.error("Error creating users table:", err.message);
-    throw err; 
-  } finally {
-    if (connection) {
-      connection.release();
-    }
+    console.error("Error creating users table:", err.stack);
+    throw err;
   }
 }
 

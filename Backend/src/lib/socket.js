@@ -1,7 +1,7 @@
 const { Server } = require("socket.io");
 const http = require("http");
 const express = require("express");
-const db = require("../lib/db");
+const pool = require("../lib/db");
 
 const app = express();
 const server = http.createServer(app);
@@ -17,7 +17,7 @@ const io = new Server(server, {
   },
 });
 
-const userSocketMap = {}; 
+const userSocketMap = {};
 
 const getReceiverSocketId = (userId) => userSocketMap[userId];
 
@@ -28,9 +28,10 @@ io.on("connection", (socket) => {
 
   if (userId) {
     userSocketMap[userId] = socket.id;
-    db.execute("UPDATE users SET isOnline = 1 WHERE id = ?", [userId])
-      .then(() => console.log(` User ${userId} marked online`))
-      .catch((err) => console.error("DB error (online):", err.message));
+
+    pool.query("UPDATE users SET isonline = true WHERE id = $1", [userId])
+      .then(() => console.log(`User ${userId} marked online`))
+      .catch((err) => console.error("DB error (online):", err.stack));
   }
 
   socket.emit("userId", userId);
@@ -43,7 +44,7 @@ io.on("connection", (socket) => {
       io.to(receiverSocketId).emit("showTyping", { userId });
     }
   });
-  
+
   socket.on("disconnect", async () => {
     console.log("Disconnected:", socket.id);
 
@@ -55,13 +56,13 @@ io.on("connection", (socket) => {
       delete userSocketMap[disconnectedUserId];
 
       try {
-        await db.execute(
-          "UPDATE users SET isOnline = 0, lastSeen = NOW() WHERE id = ?",
+        await pool.query(
+          "UPDATE users SET isonline = false, lastseen = NOW() WHERE id = $1",
           [disconnectedUserId]
         );
         console.log(`Last seen updated for user ${disconnectedUserId}`);
       } catch (err) {
-        console.error("DB error (lastSeen):", err.message);
+        console.error("DB error (lastSeen):", err.stack);
       }
     }
 

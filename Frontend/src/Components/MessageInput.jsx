@@ -1,7 +1,7 @@
 import "./MessageInput.css";
 import { useRef, useState } from "react";
 import { useChatStore } from "../Store/useChatStore";
-import { ArrowRight, Image, Send, X } from "lucide-react";
+import { ArrowRight, Image, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../Store/useAuthStore";
 import EmojiPicker from "emoji-picker-react";
@@ -12,8 +12,9 @@ const MessageInput = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const fileInputRef = useRef(null);
+
   const { authUser, socket } = useAuthStore();
-  const { sendMessage, addMessage, updateMessage, selectedUser } = useChatStore();
+  const { sendMessage, selectedUser } = useChatStore();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -23,9 +24,7 @@ const MessageInput = () => {
     }
 
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result);
-    };
+    reader.onloadend = () => setImagePreview(reader.result);
     reader.readAsDataURL(file);
   };
 
@@ -35,27 +34,30 @@ const MessageInput = () => {
   };
 
   const handleSendMessage = async (e) => {
-  e.preventDefault();
-  if (!text.trim() && !imagePreview) return;
+    e.preventDefault();
+    if (!text.trim() && !imagePreview) return;
 
-  try {
-    await sendMessage({
-      senderId: authUser.id,
-      receiverId: selectedUser.id,
-      text: text.trim(),
-      image: imagePreview,
-    });
+    try {
+      await sendMessage({
+        senderId: authUser.id,
+        receiverId: selectedUser.id,
+        text: text.trim(),
+        image: imagePreview,
+      });
 
-    setText("");
-    setImagePreview(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  } catch (error) {
-    console.error("Failed to send message:", error);
-  }
+      setText("");
+      setImagePreview(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      toast.error("Failed to send message");
+    }
   };
 
   const handleTyping = (e) => {
-    setText(e.target.value);
+    const value = e.target.value;
+    setText(value);
+
     if (selectedUser && authUser) {
       socket.emit("typing", {
         toUserId: selectedUser.id,
@@ -84,10 +86,7 @@ const MessageInput = () => {
       {showEmojiPicker && (
         <div className="emoji-picker">
           <div className="emoji-picker-header">
-            <button
-              className="remove-button"
-              onClick={() => setShowEmojiPicker(false)}
-            >
+            <button className="remove-button" onClick={() => setShowEmojiPicker(false)}>
               <X size={18} />
             </button>
           </div>
@@ -99,7 +98,7 @@ const MessageInput = () => {
         <input
           type="text"
           className="message-input-field"
-          placeholder="Type a message...."
+          placeholder="Type a message..."
           value={text}
           onChange={handleTyping}
         />

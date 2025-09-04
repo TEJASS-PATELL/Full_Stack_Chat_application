@@ -1,26 +1,23 @@
-const db = require("../lib/db");
+const pool = require("../lib/db");
 
 async function createMessagesTable() {
   try {
-    const connection = await db.getConnection();
-
-    await connection.execute(`
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS messages (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        senderId INT NOT NULL,
-        receiverId INT NOT NULL,
+        id SERIAL PRIMARY KEY,
+        senderid INT NOT NULL,
+        receiverid INT NOT NULL,
         text TEXT,
         image VARCHAR(5000),
         createdat TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (senderId) REFERENCES users(id) ON DELETE CASCADE,
-        FOREIGN KEY (receiverId) REFERENCES users(id) ON DELETE CASCADE
+        CONSTRAINT fk_sender FOREIGN KEY (senderid) REFERENCES users(id) ON DELETE CASCADE,
+        CONSTRAINT fk_receiver FOREIGN KEY (receiverid) REFERENCES users(id) ON DELETE CASCADE
       );
     `);
 
-    connection.release();
     console.log("Messages table checked/created successfully.");
   } catch (err) {
-    console.error("Error creating messages table:", err.message);
+    console.error("Error creating messages table:", err.stack);
   }
 }
 

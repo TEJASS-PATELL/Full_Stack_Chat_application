@@ -3,44 +3,46 @@ import { X, LogOut, User } from "lucide-react";
 import { useAuthStore } from "../Store/useAuthStore";
 import { useChatStore } from "../Store/useChatStore";
 import { Link, useNavigate } from "react-router-dom";
-const ChatHeader = () => {
-  const {
-    selectedUser,
-    setSelectedUser,
-    typingUserId,
-  } = useChatStore();
 
+const ChatHeader = () => {
+  const { selectedUser, setSelectedUser, typingUserId } = useChatStore();
   const { authUser, onlineUsers, logout } = useAuthStore();
   const navigate = useNavigate();
-  const isOnline = onlineUsers.includes(String(selectedUser?.id));
+  const isOnline = selectedUser && onlineUsers.includes(selectedUser.id);
   const isTyping = typingUserId === selectedUser?.id;
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
   };
+
+  if (!selectedUser) return null;
 
   return (
     <div className="chat-header">
       <div className="chat-user">
         <div className="avatar-container">
           <img
-            src={selectedUser?.profilepic || "/avatar.png"}
-            alt={selectedUser?.fullname}
+            src={selectedUser.profilepic || "/avatar.png"}
+            alt={selectedUser.fullname}
             className="avatar"
           />
           <span className={`status-indicator ${isOnline ? "online" : "offline"}`}></span>
         </div>
 
         <div className="user-details">
-          <h3 className="user-name">{selectedUser?.fullname}</h3>
+          <h3 className="user-name">{selectedUser.fullname}</h3>
           <p className={`user-status ${isTyping ? "typing" : isOnline ? "online" : "offline"}`}>
             {isTyping ? "Typing..." : isOnline ? "Online" : "Offline"}
           </p>
         </div>
       </div>
 
-      <div className="chatbot-continerrr">
+      <div className="chat-controls">
         {authUser && (
           <>
             <Link to="/profile" className="nav-btn">

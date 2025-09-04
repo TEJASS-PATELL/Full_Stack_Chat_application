@@ -85,31 +85,18 @@ const ChatContainer = () => {
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`message ${message.senderId === authUser.id
-              ? "message-incoming"
-              : "message-outgoing"
-              }`}
+            className={`message ${message.senderId === authUser.id ? "message-outgoing" : "message-incoming"}`}
           >
             <div className="avatar-wrapperr">
               <img
-                src={
-                  message.senderId === authUser.id
-                    ? selectedUser.profilepic || "/avatar.png"
-                    : authUser.profilepic || "/avatar.png"
-                }
+                src={message.senderId === authUser.id ? authUser.profilepic || "/avatar.png" : selectedUser.profilepic || "/avatar.png"}
                 alt="profile pic"
                 className="avatarr"
               />
             </div>
             <div className="message-contentt">
               <div className="message-bubble">
-                {message.image && (
-                  <img
-                    src={message.image}
-                    alt="Attachment"
-                    className="message-image"
-                  />
-                )}
+                {message.image && <img src={message.image} alt="Attachment" className="message-image" />}
                 {message.text && (
                   <p
                     className="message-text"
@@ -121,13 +108,12 @@ const ChatContainer = () => {
                     }}
                   />
                 )}
-                <time className="timestamp">
-                  {formatMessageTime(message.createdAt || message.createdat)}
-                </time>
+                <time className="timestamp">{formatMessageTime(message.createdAt || message.createdat)}</time>
               </div>
             </div>
           </div>
         ))}
+
         <div ref={messageEndRef} />
       </div>
       <MessageInput />

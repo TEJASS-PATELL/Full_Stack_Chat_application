@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const db = require("../lib/db"); 
+const pool = require("../lib/db");
 
 const protectRoute = async (req, res, next) => {
   try {
@@ -14,17 +14,17 @@ const protectRoute = async (req, res, next) => {
       return res.status(401).json({ message: "Unauthorized - Invalid Token" });
     }
 
-    const [rows] = await db.execute(
-      "SELECT id, fullname, email, profilepic, createdat FROM users WHERE id = ?", 
+    const { rows } = await pool.query(
+      "SELECT id, fullname, email, profilepic, createdat FROM users WHERE id = $1",
       [decoded.userId]
     );
 
     if (rows.length === 0) {
       return res.status(404).json({ message: "User not found" });
     }
-    
-    await db.execute(
-      "UPDATE users SET lastSeen = NOW() WHERE id = ?",
+
+    await pool.query(
+      "UPDATE users SET lastseen = NOW() WHERE id = $1",
       [decoded.userId]
     );
 
@@ -32,7 +32,7 @@ const protectRoute = async (req, res, next) => {
     next();
 
   } catch (error) {
-    console.error("Error in protectRoute middleware:", error.message);
+    console.error("Error in protectRoute middleware:", error.stack);
 
     if (error.name === "JsonWebTokenError") {
       return res.status(401).json({ message: "Invalid token" });

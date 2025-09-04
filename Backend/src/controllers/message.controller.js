@@ -3,27 +3,20 @@ const cloudinary = require("../lib/cloudinary");
 const { getReceiverSocketId, io } = require("../lib/socket");
 
 const getUsersForSidebar = async (req, res) => {
-  let connection;
   try {
-    connection = await pool.getConnection(); 
-
     const loggedInUserId = req.user.id;
 
-    const [filteredUsers] = await connection.execute(
-      `SELECT id, fullname, email, profilepic, createdat, isOnline, lastSeen
+    const { rows: filteredUsers } = await pool.query(
+      `SELECT id, fullname, email, profilepic, createdat, isonline AS "isOnline", lastseen AS "lastSeen"
        FROM users 
-       WHERE id != ?`, 
+       WHERE id != $1`,
       [loggedInUserId]
     );
 
     res.status(200).json(filteredUsers);
   } catch (error) {
-    console.error("Error in getUsersForSidebar:", error.message);
+    console.error("Error in getUsersForSidebar:", error.stack);
     res.status(500).json({ error: "Internal server error" });
-  } finally {
-    if (connection) {
-      connection.release();
-    }
   }
 };
 
@@ -32,17 +25,17 @@ const getMessages = async (req, res) => {
     const { id: userToChatId } = req.params;
     const myId = req.user.id;
 
-    const [messages] = await db.execute(
-      `SELECT * FROM messages 
-       WHERE (senderId = ? AND receiverId = ?) 
-       OR (senderId = ? AND receiverId = ?) 
-       ORDER BY createdAt ASC`, 
-      [myId, userToChatId, userToChatId, myId]
+    const { rows: messages } = await pool.query(
+      `SELECT * FROM messages
+       WHERE (senderid = $1 AND receiverid = $2) 
+          OR (senderid = $2 AND receiverid = $1)
+       ORDER BY createdat ASC`,
+      [myId, userToChatId]
     );
 
     res.status(200).json(messages);
   } catch (error) {
-    console.error("Error in getMessages controller:", error.message);
+    console.error("Error in getMessages controller:", error.stack);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -58,29 +51,24 @@ const sendMessage = async (req, res) => {
       const uploadResponse = await cloudinary.uploader.upload(image);
       imageUrl = uploadResponse.secure_url;
     }
-    const [result] = await db.execute(
-      `INSERT INTO messages (senderId, receiverId, text, image, seen) 
-       VALUES (?, ?, ?, ?, ?)`,
-      [senderId, receiverId, text, imageUrl, false] 
+
+    const result = await pool.query(
+      `INSERT INTO messages (senderid, receiverid, text, image, seen)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING id, senderid, receiverid, text, image, seen, createdat`,
+      [senderId, receiverId, text, imageUrl, false]
     );
-    const newMessage = {
-      id: result.insertId,
-      senderId,
-      receiverId,
-      text,
-      image: imageUrl,
-      seen: false, 
-      createdAt: new Date().toISOString(),
-    };
+
+    const newMessage = result.rows[0];
 
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
     }
 
-    res.status(201).json(newMessage); 
+    res.status(201).json(newMessage);
   } catch (error) {
-    console.error("Error in sendMessage controller:", error.message);
+    console.error("Error in sendMessage controller:", error.stack);
     res.status(500).json({ error: "Internal server error" });
   }
 };

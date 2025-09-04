@@ -1,6 +1,7 @@
-const db = require("../lib/db"); 
+const pool = require("../lib/db"); 
 const { generateToken } = require("../lib/utils");
 const bcrypt = require("bcryptjs");
+const cloudinary = require("../lib/cloudinary");
 
 const signup = async (req, res) => {
   const { fullname, email, password } = req.body;
@@ -14,8 +15,8 @@ const signup = async (req, res) => {
       return res.status(400).json({ message: "Password must be at least 6 characters" });
     }
 
-    const [existingUser] = await db.query(
-      `SELECT id FROM users WHERE email = ?`,
+    const { rows: existingUser } = await pool.query(
+      `SELECT id FROM users WHERE email = $1`,
       [email]
     );
 
@@ -25,13 +26,12 @@ const signup = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const [result] = await db.query(
-      `INSERT INTO users (fullname, email, password) VALUES (?, ?, ?)`,
+    const { rows: result } = await pool.query(
+      `INSERT INTO users (fullname, email, password) VALUES ($1, $2, $3) RETURNING id`,
       [fullname, email, hashedPassword]
     );
 
-    const newUserId = result.insertId;
-
+    const newUserId = result[0].id;
     generateToken(newUserId, res);
 
     res.status(201).json({
@@ -50,37 +50,30 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
 
-  let connection;
-
   try {
-    connection = await db.getConnection();
-
-    const [user] = await connection.execute(
-      `SELECT * FROM users WHERE email = ?`,
+    const { rows: userRows } = await pool.query(
+      `SELECT * FROM users WHERE email = $1`,
       [email]
     );
 
-    if (user.length === 0) {
+    if (userRows.length === 0) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const validUser = user[0];
-
+    const validUser = userRows[0];
     const isPasswordCorrect = await bcrypt.compare(password, validUser.password);
+
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // ✅ Update isOnline = true and lastSeen = NOW()
-    await connection.execute(
-      `UPDATE users SET isOnline = 1, lastSeen = NOW() WHERE id = ?`,
+    await pool.query(
+      `UPDATE users SET isonline = true, lastseen = NOW() WHERE id = $1`,
       [validUser.id]
     );
 
-    // ✅ Generate token in cookie
     generateToken(validUser.id, res);
 
-    // ✅ Send response
     res.status(200).json({
       id: validUser.id,
       fullname: validUser.fullname,
@@ -89,25 +82,18 @@ const login = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Error in login controller:", error.message);
+    console.error("Error in login controller:", error.stack);
     res.status(500).json({ message: "Internal Server Error" });
-  } finally {
-    // ✅ Always release connection
-    if (connection) connection.release();
   }
 };
 
 const logout = async (req, res) => {
-  let connection;
-
   try {
     const userId = req.user?.id;
 
     if (userId) {
-      connection = await db.getConnection();
-
-      await connection.execute(
-        `UPDATE users SET isOnline = 0, lastSeen = NOW() WHERE id = ?`,
+      await pool.query(
+        `UPDATE users SET isonline = false, lastseen = NOW() WHERE id = $1`,
         [userId]
       );
     }
@@ -121,11 +107,8 @@ const logout = async (req, res) => {
     res.status(200).json({ message: "Logged out successfully" });
 
   } catch (error) {
-    console.error("Error in logout controller:", error.message);
+    console.error("Error in logout controller:", error.stack);
     res.status(500).json({ message: "Internal Server Error" });
-
-  } finally {
-    if (connection) connection.release();
   }
 };
 
@@ -134,41 +117,25 @@ const updateProfile = async (req, res) => {
     const { profilepic } = req.body;
     const userId = req.user?.id;
 
-    if (!userId) {
-      return res.status(401).json({ message: "Unauthorized: User ID missing" });
-    }
+    if (!userId) return res.status(401).json({ message: "Unauthorized: User ID missing" });
+    if (!profilepic) return res.status(400).json({ message: "Profile pic is required" });
 
-    if (!profilepic) {
-      return res.status(400).json({ message: "Profile pic is required" });
-    }
+    const uploadResponse = await cloudinary.uploader.upload(profilepic, { folder: "user_profiles" });
 
-    let uploadResponse;
-    try {
-      uploadResponse = await cloudinary.uploader.upload(profilepic, {
-        folder: "user_profiles",
-      });
-    } catch (uploadErr) {
-      return res.status(500).json({ message: "Image upload failed" });
-    }
-
-    const connection = await db.getConnection();
-
-    await connection.execute(
-      `UPDATE users SET profilepic = ? WHERE id = ?`,
+    await pool.query(
+      `UPDATE users SET profilepic = $1 WHERE id = $2`,
       [uploadResponse.secure_url, userId]
     );
 
-    const [updatedUser] = await connection.execute(
-      `SELECT id, fullname, email, profilepic, createdat FROM users WHERE id = ?`,
+    const { rows: updatedUser } = await pool.query(
+      `SELECT id, fullname, email, profilepic, createdat FROM users WHERE id = $1`,
       [userId]
     );
-
-    connection.release();
 
     res.status(200).json(updatedUser[0]);
 
   } catch (error) {
-    console.error("Error in updateProfile:", error);
+    console.error("Error in updateProfile:", error.stack);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -176,39 +143,28 @@ const updateProfile = async (req, res) => {
 const checkAuth = async (req, res) => {
   try {
     const userId = req.user.id;
-    const connection = await db.getConnection();
 
-    const [user] = await connection.execute(
-      `SELECT id, fullname, email, profilepic, createdat FROM users WHERE id = ?`,
+    const { rows: user } = await pool.query(
+      `SELECT id, fullname, email, profilepic, createdat FROM users WHERE id = $1`,
       [userId]
     );
 
-    connection.release();
-
-    if (user.length === 0) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (user.length === 0) return res.status(404).json({ message: "User not found" });
 
     res.status(200).json(user[0]);
   } catch (error) {
-    console.error("Error in checkAuth controller:", error.message);
+    console.error("Error in checkAuth controller:", error.stack);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
 const deleteAccount = async (req, res) => {
-  let connection;
   try {
-    const userId = req.user.id; 
+    const userId = req.user.id;
+    if (!userId) return res.status(401).json({ message: "Unauthorized: User ID missing" });
 
-    if (!userId) {
-      return res.status(401).json({ message: "Unauthorized: User ID missing" });
-    }
-
-    connection = await db.getConnection();
-
-    const [result] = await connection.execute(
-      `DELETE FROM users WHERE id = ?`,
+    const { rowCount } = await pool.query(
+      `DELETE FROM users WHERE id = $1`,
       [userId]
     );
 
@@ -218,19 +174,13 @@ const deleteAccount = async (req, res) => {
       sameSite: "Lax",
     });
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (rowCount === 0) return res.status(404).json({ message: "User not found" });
 
-    return res.status(200).json({ message: "Account deleted successfully" });
+    res.status(200).json({ message: "Account deleted successfully" });
 
   } catch (error) {
-    console.error("deleteAccount error:", error);
-    return res
-      .status(500)
-      .json({ message: "Something went wrong while deleting account" });
-  } finally {
-    if (connection) connection.release();
+    console.error("deleteAccount error:", error.stack);
+    res.status(500).json({ message: "Something went wrong while deleting account" });
   }
 };
 
