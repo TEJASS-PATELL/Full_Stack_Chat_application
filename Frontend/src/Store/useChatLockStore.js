@@ -46,7 +46,7 @@ export const useChatLockStore = create((set, get) => ({
       );
       toast.success("Chat locked successfully!");
     } catch (err) {
-      set({ lockedUserIds: prevLockedIds }); // rollback
+      set({ lockedUserIds: prevLockedIds });
       toast.error(err.response?.data?.message || "Failed to lock chat");
     } finally {
       set({ isLocking: false });

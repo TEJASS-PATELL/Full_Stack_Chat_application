@@ -58,7 +58,7 @@ const ChatHeader = () => {
               isTyping ? "typing" : isOnline ? "online" : "offline"
             }`}
           >
-            {isTyping ? "Typing..." : isOnline ? "Online" : selectedUser.lastSeen ? `Last seen ${formatLastSeen(selectedUser.lastSeen)}` : "Offline"}
+            {isTyping ? "Typing..." : isOnline ? "Online" :"Offline"}
           </p>
         </div>
       </div>
