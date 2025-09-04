@@ -11,8 +11,8 @@ const pool = new Pool({
 
 (async () => {
   try {
-    await pool.query("SELECT 1");
-    console.log("PostgreSQL Pool connected successfully");
+    const res = await pool.query("SELECT NOW()");
+    console.log("PostgreSQL connected successfully at:", res.rows[0].now);
   } catch (err) {
     console.error("Error connecting to PostgreSQL:", err.stack);
     process.exit(1);

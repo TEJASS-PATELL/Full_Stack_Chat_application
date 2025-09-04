@@ -27,18 +27,19 @@ const signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const { rows: result } = await pool.query(
-      `INSERT INTO users (fullname, email, password) VALUES ($1, $2, $3) RETURNING id`,
+      `INSERT INTO users (fullname, email, password, createdat) 
+       VALUES ($1, $2, $3, NOW()) RETURNING id, fullname, email, profilepic`,
       [fullname, email, hashedPassword]
     );
 
-    const newUserId = result[0].id;
-    generateToken(newUserId, res);
+    const newUser = result[0];
+    generateToken(newUser.id, res);
 
     res.status(201).json({
-      id: newUserId,
-      fullname,
-      email,
-      profilepic: null,
+      id: newUser.id,
+      fullname: newUser.fullname,
+      email: newUser.email,
+      profilePic: newUser.profilepic || null,
     });
 
   } catch (error) {
@@ -51,8 +52,12 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
+
     const { rows: userRows } = await pool.query(
-      `SELECT * FROM users WHERE email = $1`,
+      `SELECT id, fullname, email, password, profilepic FROM users WHERE email = $1`,
       [email]
     );
 
@@ -60,8 +65,8 @@ const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    const validUser = userRows[0];
-    const isPasswordCorrect = await bcrypt.compare(password, validUser.password);
+    const user = userRows[0];
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: "Invalid credentials" });
@@ -69,16 +74,16 @@ const login = async (req, res) => {
 
     await pool.query(
       `UPDATE users SET isonline = true, lastseen = NOW() WHERE id = $1`,
-      [validUser.id]
+      [user.id]
     );
 
-    generateToken(validUser.id, res);
+    generateToken(user.id, res);
 
     res.status(200).json({
-      id: validUser.id,
-      fullname: validUser.fullname,
-      email: validUser.email,
-      profilePic: validUser.profilepic,
+      id: user.id,
+      fullname: user.fullname,
+      email: user.email,
+      profilePic: user.profilepic || null,
     });
 
   } catch (error) {
@@ -142,16 +147,32 @@ const updateProfile = async (req, res) => {
 
 const checkAuth = async (req, res) => {
   try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     const userId = req.user.id;
 
-    const { rows: user } = await pool.query(
-      `SELECT id, fullname, email, profilepic, createdat FROM users WHERE id = $1`,
+    const { rows: userRows } = await pool.query(
+      `SELECT id, fullname, email, profilepic, createdat, lastseen 
+       FROM users WHERE id = $1`,
       [userId]
     );
 
-    if (user.length === 0) return res.status(404).json({ message: "User not found" });
+    if (userRows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    res.status(200).json(user[0]);
+    const user = userRows[0];
+
+    res.status(200).json({
+      id: user.id,
+      fullname: user.fullname,
+      email: user.email,
+      profilePic: user.profilepic || null,
+      createdAt: user.createdat,
+      lastSeen: user.lastseen,
+    });
   } catch (error) {
     console.error("Error in checkAuth controller:", error.stack);
     res.status(500).json({ message: "Internal Server Error" });
