@@ -91,7 +91,6 @@ export const useAuthStore = create((set, get) => ({
         withCredentials: true,
       });
       set({ authUser: null });
-      toast.success("Account deleted successfully");
       get().disconnectSocket();
     } catch (error) {
       toast.error(error.response?.data?.message || "Account deletion failed");

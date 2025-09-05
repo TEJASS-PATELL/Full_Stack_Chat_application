@@ -30,7 +30,7 @@ const ProfilePage = () => {
       const base64Image = reader.result;
       try {
         const updatedUser = await updateProfile({ profilepic: base64Image });
-        setSelectedImg(updatedUser.profilepic); // Update local state
+        setSelectedImg(updatedUser.profilepic); 
         toast.success("Profile picture updated!");
       } catch (error) {
         toast.error("Failed to update profile picture.");
