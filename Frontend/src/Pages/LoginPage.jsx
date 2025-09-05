@@ -7,39 +7,19 @@ import "../styles/LoginPage.css";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
 
   const { login, isLoggingIn } = useAuthStore();
   const formRef = useRef(null);
 
-  useEffect(() => {
-    const savedEmail = localStorage.getItem("rememberedEmail");
-    const savedPassword = localStorage.getItem("rememberedPassword");
-    if (savedEmail && savedPassword) {
-      setFormData({ email: savedEmail, password: savedPassword });
-      setRememberMe(true);
-    }
-  }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (rememberMe) {
-      localStorage.setItem("rememberedEmail", formData.email);
-      localStorage.setItem("rememberedPassword", formData.password);
-    } else {
-      localStorage.removeItem("rememberedEmail");
-      localStorage.removeItem("rememberedPassword");
-    }
-
     login(formData);
   };
 
   return (
     <div className="wrapper">
       <div className="login-container">
-
         <main className="login-form-container">
           <div className="glassmorphism-form" ref={formRef}>
             <div className="text-center">
@@ -84,16 +64,6 @@ const LoginPage = () => {
                 >
                   {showPassword ? <FaLockOpen /> : <FaLock />}
                 </button>
-              </div>
-
-              <div className="remember-me">
-                <input
-                  type="checkbox"
-                  id="remember"
-                  checked={rememberMe}
-                  onChange={() => setRememberMe(!rememberMe)}
-                />
-                <label htmlFor="remember">Remember Me</label>
               </div>
 
               <button type="submit" className="submit-btnn" disabled={isLoggingIn}>

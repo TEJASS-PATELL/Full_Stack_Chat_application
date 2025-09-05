@@ -46,7 +46,7 @@ const ChatContainer = () => {
         if ("Notification" in window && Notification.permission === "granted") {
           new Notification("New message from " + (selectedUser?.username || "Someone"), {
             body: message.text || "Attachment",
-            icon: selectedUser?.profilepic || "/avatar.png",
+            icon: selectedUser?.profilepic || "./user.png",
           });
         }
       };
@@ -89,10 +89,15 @@ const ChatContainer = () => {
           >
             <div className="avatar-wrapperr">
               <img
-                src={message.senderId === authUser.id ? authUser.profilepic || "/avatar.png" : selectedUser.profilepic || "/avatar.png"}
+                src={
+                  message.senderId === authUser.id
+                    ? authUser.profilepic || authUser.profilePic || "./user.png"
+                    : selectedUser?.profilepic || selectedUser?.profilePic || "./user.png"
+                }
                 alt="profile pic"
                 className="avatarr"
               />
+
             </div>
             <div className="message-contentt">
               <div className="message-bubble">
