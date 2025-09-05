@@ -1,13 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthStore } from "../Store/useAuthStore";
 import { Camera, Mail, User, Loader2, CalendarDays } from "lucide-react";
 import toast from "react-hot-toast";
 import "../styles/ProfilePage.css";
 
 const ProfilePage = () => {
-  const { authUser, isUpdatingProfile, updateProfile, deleteAccount, isDeletingAccount } =
-    useAuthStore();
+  const {
+    authUser,
+    isUpdatingProfile,
+    updateProfile,
+    deleteAccount,
+    isDeletingAccount,
+  } = useAuthStore();
+
   const [selectedImg, setSelectedImg] = useState(null);
+
+  useEffect(() => {
+    setSelectedImg(authUser?.profilepic || null);
+  }, [authUser]);
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -18,9 +28,10 @@ const ProfilePage = () => {
 
     reader.onload = async () => {
       const base64Image = reader.result;
-      setSelectedImg(base64Image);
       try {
-        await updateProfile({ profilepic: base64Image });
+        const updatedUser = await updateProfile({ profilepic: base64Image });
+        setSelectedImg(updatedUser.profilepic); // Update local state
+        toast.success("Profile picture updated!");
       } catch (error) {
         toast.error("Failed to update profile picture.");
       }
@@ -35,17 +46,19 @@ const ProfilePage = () => {
 
     try {
       await deleteAccount();
+      toast.success("Account deleted successfully.");
     } catch (error) {
       toast.error("Failed to delete account.");
     }
   };
 
-  const formattedDate = authUser?.createdat
+  const createdAt = authUser?.createdAt || authUser?.createdat;
+  const formattedDate = createdAt
     ? new Intl.DateTimeFormat("en-US", {
         year: "numeric",
         month: "long",
         day: "numeric",
-      }).format(new Date(authUser.createdat))
+      }).format(new Date(createdAt))
     : "N/A";
 
   return (
@@ -59,7 +72,7 @@ const ProfilePage = () => {
         <div className="avatar-upload">
           <div className="avatar-wrapper">
             <img
-              src={selectedImg || authUser.profilepic || "/user.png"}
+              src={selectedImg || "/user.png"}
               alt="Profile"
               className="avatar-img"
             />
@@ -107,7 +120,7 @@ const ProfilePage = () => {
         <div className="account-itemm">
           <div className="info-cardd">
             <div className="info-header">
-              <CalendarDays />
+              <CalendarDays className="info-icon" />
               <h2>Member Since</h2>
             </div>
             <p className="p-icon">{formattedDate}</p>
@@ -117,7 +130,8 @@ const ProfilePage = () => {
             <button
               onClick={handleDeleteAccount}
               disabled={isDeletingAccount}
-              className="delete_account">
+              className="delete_account"
+            >
               {isDeletingAccount ? "Deleting..." : "Delete Account"}
             </button>
           </div>
