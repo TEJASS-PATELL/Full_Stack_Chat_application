@@ -73,9 +73,6 @@ export const useChatStore = create(
             createdAt: res.data.createdat,
           };
 
-          const socket = useAuthStore.getState().socket;
-          socket.emit("sendMessage", newMsg);
-
           addMessage(newMsg);
         } catch (error) {
           toast.error(error.response?.data?.message || "Failed to send message");

@@ -35,8 +35,14 @@ io.on("connection", (socket) => {
   }
 
   socket.emit("userId", userId);
-
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
+
+  socket.on("sendMessage", (message) => {
+    const receiverSocketId = userSocketMap[message.receiverId];
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", message);
+    }
+  });
 
   socket.on("typing", ({ toUserId, userId }) => {
     const receiverSocketId = userSocketMap[toUserId];
@@ -54,7 +60,6 @@ io.on("connection", (socket) => {
 
     if (disconnectedUserId) {
       delete userSocketMap[disconnectedUserId];
-
       try {
         await pool.query(
           "UPDATE users SET isonline = false, lastseen = NOW() WHERE id = $1",
@@ -69,5 +74,6 @@ io.on("connection", (socket) => {
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
   });
 });
+
 
 module.exports = { app, server, io, getReceiverSocketId };

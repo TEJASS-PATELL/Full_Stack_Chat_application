@@ -17,7 +17,7 @@ const ChatContainer = () => {
     unsubscribeFromMessages,
   } = useChatStore();
 
-  const { authUser, socket} = useAuthStore();
+  const { authUser, socket } = useAuthStore();
   const messageEndRef = useRef(null);
 
   useEffect(() => {
@@ -31,33 +31,11 @@ const ChatContainer = () => {
         }, 2000);
       };
 
-      const handleNewMessage = (message) => {
-        const currentUser = useAuthStore.getState().authUser;
-        const selectedUser = useChatStore.getState().selectedUser;
-
-        const isSenderOrReceiver =
-          (message.senderId === currentUser.id && message.receiverId === selectedUser?.id) ||
-          (message.senderId === selectedUser?.id && message.receiverId === currentUser.id);
-
-        if (!isSenderOrReceiver) return;
-
-        useChatStore.getState().addMessage(message);
-
-        if ("Notification" in window && Notification.permission === "granted") {
-          new Notification("New message from " + (selectedUser?.username || "Someone"), {
-            body: message.text || "Attachment",
-            icon: selectedUser?.profilepic || "./user.png",
-          });
-        }
-      };
-
       socket.on("showTyping", handleTyping);
-      socket.on("newMessage", handleNewMessage);
 
       return () => {
         unsubscribeFromMessages();
-        socket.off("showTyping");
-        socket.off("newMessage", handleNewMessage);
+        socket.off("showTyping", handleTyping);
       };
     }
   }, [selectedUser]);
@@ -85,7 +63,11 @@ const ChatContainer = () => {
         {messages.map((message) => (
           <div
             key={message.id}
-            className={`message ${message.senderId === authUser.id ? "message-incoming" : "message-outgoing"}`}
+            className={`message ${
+              message.senderId === authUser.id
+                ? "message-incoming"
+                : "message-outgoing"
+            }`}
           >
             <div className="avatar-wrapperr">
               <img
@@ -97,11 +79,16 @@ const ChatContainer = () => {
                 alt="profile pic"
                 className="avatarr"
               />
-
             </div>
             <div className="message-contentt">
               <div className="message-bubble">
-                {message.image && <img src={message.image} alt="Attachment" className="message-image" />}
+                {message.image && (
+                  <img
+                    src={message.image}
+                    alt="Attachment"
+                    className="message-image"
+                  />
+                )}
                 {message.text && (
                   <p
                     className="message-text"
@@ -113,7 +100,9 @@ const ChatContainer = () => {
                     }}
                   />
                 )}
-                <time className="timestamp">{formatMessageTime(message.createdAt || message.createdat)}</time>
+                <time className="timestamp">
+                  {formatMessageTime(message.createdAt || message.createdat)}
+                </time>
               </div>
             </div>
           </div>

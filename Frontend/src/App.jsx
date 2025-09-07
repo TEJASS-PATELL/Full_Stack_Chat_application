@@ -28,7 +28,7 @@ const App = () => {
           const shortMsg = notif.message
             ? notif.message.split(" ").slice(0, 10).join(" ")
             : "📩 New message";
-          toast(`🔔 ${notif.senderName}: ${shortMsg}...`);
+          toast(`🔔 ${notif.senderName} sends: ${shortMsg}...`);
         });
       }
 
