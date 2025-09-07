@@ -65,14 +65,12 @@ const sendMessage = async (req, res) => {
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
-
       io.to(receiverSocketId).emit("notification", {
         type: "message",
         senderName: `${req.user.fullname || "Someone"}`,
         message: newMessage.text,
       });
     }
-
     res.status(201).json(newMessage);
   } catch (error) {
     console.error("Error in sendMessage controller:", error.stack);

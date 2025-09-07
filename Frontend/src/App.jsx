@@ -1,17 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./Store/useAuthStore";
-import { socket, connectSocket } from "./lib/socket.js";
+import { connectSocket, socket } from "./lib/socket.js";
 import { Loader } from "lucide-react";
 import { Toaster, toast } from "react-hot-toast";
 import HomePage from "./Pages/HomePage";
 import SignUpPage from "./Pages/SignUpPage";
 import LoginPage from "./Pages/LoginPage";
 import ProfilePage from "./Pages/ProfilePage";
+import { useChatStore } from "./Store/useChatStore";
 import "./App.css";
 
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  const { subscribeToMessages, unsubscribeFromMessages } = useChatStore();
 
   useEffect(() => {
     checkAuth();
@@ -20,30 +22,22 @@ const App = () => {
   useEffect(() => {
     if (authUser?.id) {
       connectSocket(authUser.id);
-
-      if (socket) {
-        socket.on("newMessage", (newMsg) => {
-          setMessages((prev) => [...prev, newMsg]); 
-        });
-      }
-
+      subscribeToMessages();
       if (socket) {
         socket.on("notification", (notif) => {
-          const shortMsg = notif.message ? notif.message.split(" ").slice(0, 10).join(" ") : "📩 New message";
-          toast(
-            `🔔 ${notif.senderName}: Send you a new message- ${shortMsg}...`,
-          );
+          const shortMsg = notif.message
+            ? notif.message.split(" ").slice(0, 10).join(" ")
+            : "📩 New message";
+          toast(`🔔 ${notif.senderName}: ${shortMsg}...`);
         });
       }
-    }
 
-    return () => {
-      if (socket) {
-        socket.off("newMessage");
-        socket.off("notification");
-      }
-    };
-  }, [authUser]);
+      return () => {
+        unsubscribeFromMessages();
+        if (socket) socket.off("notification");
+      };
+    }
+  }, [authUser, subscribeToMessages, unsubscribeFromMessages]);
 
   if (isCheckingAuth && !authUser) {
     return (
