@@ -35,7 +35,6 @@ export const useChatStore = create(
         set({ isMessagesLoading: true });
         try {
           const res = await axiosInstance.get(`/messages/${userId}`);
-
           if (!res.data || !Array.isArray(res.data)) {
             toast.error("Invalid response from server");
             return;
@@ -49,14 +48,9 @@ export const useChatStore = create(
           }));
 
           set({ messages });
-
         } catch (error) {
           console.error("Error fetching messages:", error);
-          if (error.response) {
-            toast.error(error.response.data?.message || "Failed to fetch messages");
-          } else {
-            toast.error("Network error while fetching messages");
-          }
+          toast.error(error.response?.data?.message || "Failed to fetch messages");
         } finally {
           set({ isMessagesLoading: false });
         }
@@ -64,6 +58,8 @@ export const useChatStore = create(
 
       sendMessage: async (messageData) => {
         const { selectedUser, addMessage } = get();
+        if (!selectedUser) return;
+
         try {
           const res = await axiosInstance.post(`/messages/send/${selectedUser.id}`, messageData);
           const newMsg = {
@@ -80,9 +76,12 @@ export const useChatStore = create(
       },
 
       addMessage: (message) => {
-        set((state) => ({
-          messages: [...state.messages, message],
-        }));
+        set((state) => {
+          // Avoid duplicate messages
+          if (state.messages.some((m) => m.id === message.id)) return state;
+
+          return { messages: [...state.messages, message] };
+        });
 
         const { selectedUser } = get();
         if (message.senderId !== selectedUser?.id) {
@@ -101,15 +100,13 @@ export const useChatStore = create(
             receiverId: newMessage.receiverid,
             createdAt: newMessage.createdat,
           };
-          const currentUser = get().selectedUser;
 
+          const currentUser = get().selectedUser;
           const isForSelectedUser =
             msg.senderId === currentUser?.id || msg.receiverId === currentUser?.id;
 
           if (isForSelectedUser) {
-            set((state) => ({
-              messages: [...state.messages, msg],
-            }));
+            get().addMessage(msg);
           } else {
             get().addUnreadMessage(msg.senderId);
           }
@@ -134,10 +131,7 @@ export const useChatStore = create(
         set((state) => {
           const updatedUnread = { ...state.unreadMessages };
           delete updatedUnread[selectedUser.id];
-          return {
-            selectedUser,
-            unreadMessages: updatedUnread,
-          };
+          return { selectedUser, unreadMessages: updatedUnread };
         });
       },
 
@@ -151,9 +145,7 @@ export const useChatStore = create(
     }),
     {
       name: "chat-store",
-      partialize: (state) => ({
-        unreadMessages: state.unreadMessages,
-      }),
+      partialize: (state) => ({ unreadMessages: state.unreadMessages }),
     }
   )
 );
