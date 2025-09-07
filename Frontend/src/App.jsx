@@ -31,7 +31,7 @@ const App = () => {
               style: {
                 padding: "10px 15px",
                 fontSize: "14px",
-                width: "500px",
+                width: "900px",
                 background: "#1a1a1a",
                 color: "#fff",
                 borderRadius: "8px",

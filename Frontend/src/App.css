@@ -18,16 +18,12 @@
   100% { transform: rotate(360deg); }
 }
 
-.notification-box {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: white;
-  color: black;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 14px;
-  font-weight: 500;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+#_rht_toaster {
+  width: 900px !important; 
+}
+
+#_rht_toaster > div {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
