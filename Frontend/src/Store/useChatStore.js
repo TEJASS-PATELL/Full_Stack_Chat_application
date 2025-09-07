@@ -35,16 +35,28 @@ export const useChatStore = create(
         set({ isMessagesLoading: true });
         try {
           const res = await axiosInstance.get(`/messages/${userId}`);
+
+          if (!res.data || !Array.isArray(res.data)) {
+            toast.error("Invalid response from server");
+            return;
+          }
+
           const messages = res.data.map((m) => ({
             ...m,
             senderId: m.senderid,
             receiverId: m.receiverid,
             createdAt: m.createdat,
           }));
+
           set({ messages });
-          await get().markMessagesAsSeen(userId);
+
         } catch (error) {
-          toast.error(error.response?.data?.message || "Failed to fetch messages");
+          console.error("Error fetching messages:", error);
+          if (error.response) {
+            toast.error(error.response.data?.message || "Failed to fetch messages");
+          } else {
+            toast.error("Network error while fetching messages");
+          }
         } finally {
           set({ isMessagesLoading: false });
         }

@@ -31,7 +31,6 @@ const ProfilePage = () => {
       try {
         const updatedUser = await updateProfile({ profilepic: base64Image });
         setSelectedImg(updatedUser.profilepic); 
-        toast.success("Profile picture updated!");
       } catch (error) {
         toast.error("Failed to update profile picture.");
       }
@@ -43,7 +42,6 @@ const ProfilePage = () => {
       "Are you sure you want to delete your account? This action cannot be undone!"
     );
     if (!confirmDelete) return;
-
     try {
       await deleteAccount();
       toast.success("Account deleted successfully.");
@@ -53,13 +51,11 @@ const ProfilePage = () => {
   };
 
   const createdAt = authUser?.createdAt || authUser?.createdat;
-  const formattedDate = createdAt
-    ? new Intl.DateTimeFormat("en-US", {
+  const formattedDate = createdAt ? new Intl.DateTimeFormat("en-US", {
         year: "numeric",
         month: "long",
         day: "numeric",
-      }).format(new Date(createdAt))
-    : "N/A";
+      }).format(new Date(createdAt)) : "N/A";
 
   return (
     <div className="profile-container">
