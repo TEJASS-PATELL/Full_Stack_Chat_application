@@ -18,12 +18,4 @@
   100% { transform: rotate(360deg); }
 }
 
-#_rht_toaster {
-  width: 900px !important; 
-}
 
-#_rht_toaster > div {
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
