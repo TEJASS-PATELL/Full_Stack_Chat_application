@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./Store/useAuthStore";
-import { socket, connectSocket } from "./lib/socket"; 
+import { socket, connectSocket } from "./lib/socket.js"; 
 import { Loader } from "lucide-react";
 import { Toaster, toast } from "react-hot-toast";
 import HomePage from "./Pages/HomePage";
@@ -22,7 +22,7 @@ const App = () => {
     if (authUser?.id) {
       connectSocket(authUser.id);
 
-       if (socket) {
+      if (socket) {
         socket.on("newMessage", (msg) => {
           setUnread((prev) => {
             const newCount = prev + 1;
