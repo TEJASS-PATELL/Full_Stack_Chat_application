@@ -12,8 +12,7 @@ import "./App.css";
 
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
-  const [unread, setUnread] = useState(0);
-
+  
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
@@ -21,16 +20,13 @@ const App = () => {
   useEffect(() => {
     if (authUser?.id) {
       connectSocket(authUser.id);
-
       if (socket) {
-        socket.on("newMessage", (msg) => {
-          setUnread((prev) => {
-            const newCount = prev + 1;
-            toast(`🔔 ${newCount} unread messages. Latest: ${msg.text || "📩 New message"}`);
-            return newCount;
-          });
+        socket.on("notification", (notif) => {
+          const shortMsg = notif.text ? notif.text.split(" ").slice(0, 10).join(" ") : "📩 New message"; 
+          toast(`🔔${notif.senderName}: Send you a new message- ${shortMsg}...`);
         });
       }
+
     }
 
     return () => {
