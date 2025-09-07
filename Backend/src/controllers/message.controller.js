@@ -69,7 +69,7 @@ const sendMessage = async (req, res) => {
       io.to(receiverSocketId).emit("notification", {
         type: "message",
         senderName: `${req.user.fullname || "Someone"}`,
-        message: newMessage,
+        message: newMessage.text,
       });
     }
 

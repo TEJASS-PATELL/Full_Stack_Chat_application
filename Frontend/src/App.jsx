@@ -12,7 +12,7 @@ import "./App.css";
 
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
-  
+
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
@@ -22,11 +22,27 @@ const App = () => {
       connectSocket(authUser.id);
       if (socket) {
         socket.on("notification", (notif) => {
-          const shortMsg = notif.text ? notif.text.split(" ").slice(0, 10).join(" ") : "📩 New message"; 
-          toast(`🔔${notif.senderName}: Send you a new message- ${shortMsg}...`);
+          const shortMsg = notif.message ? notif.message.split(" ").slice(0, 10).join(" ") : "📩 New message";
+          toast(
+            `🔔 ${notif.senderName}: Send you a new message- ${shortMsg}...`,
+            {
+              style: {
+                padding: "10px 15px",
+                fontSize: "14px",
+                background: "#1a1a1a",
+                color: "#fff",
+                borderRadius: "8px",
+                maxWidth: "350px",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              },
+              icon: "📩",
+              duration: 3000, 
+            }
+          );
         });
       }
-
     }
 
     return () => {
