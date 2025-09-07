@@ -20,6 +20,13 @@ const App = () => {
   useEffect(() => {
     if (authUser?.id) {
       connectSocket(authUser.id);
+
+      if (socket) {
+        socket.on("newMessage", (newMsg) => {
+          setMessages((prev) => [...prev, newMsg]); 
+        });
+      }
+
       if (socket) {
         socket.on("notification", (notif) => {
           const shortMsg = notif.message ? notif.message.split(" ").slice(0, 10).join(" ") : "📩 New message";
@@ -32,6 +39,7 @@ const App = () => {
 
     return () => {
       if (socket) {
+        socket.off("newMessage");
         socket.off("notification");
       }
     };
