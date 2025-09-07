@@ -22,13 +22,16 @@ const App = () => {
       connectSocket(authUser.id);
       if (socket) {
         socket.on("notification", (notif) => {
-          const shortMsg = notif.message ? notif.message.split(" ").slice(0, 10).join(" ") : "📩 New message";
+          const shortMsg = notif.message
+            ? notif.message.split(" ").slice(0, 10).join(" ")
+            : "📩 New message";
           toast(
             `🔔 ${notif.senderName}: Send you a new message- ${shortMsg}...`,
             {
               style: {
                 padding: "10px 15px",
                 fontSize: "14px",
+                width: "500px",
                 background: "#1a1a1a",
                 color: "#fff",
                 borderRadius: "8px",
@@ -38,10 +41,11 @@ const App = () => {
                 textOverflow: "ellipsis",
               },
               icon: "📩",
-              duration: 3000, 
+              duration: 3000,
             }
           );
         });
+
       }
     }
 
