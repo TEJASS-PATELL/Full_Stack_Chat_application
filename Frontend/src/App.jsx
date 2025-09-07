@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./Store/useAuthStore";
-import { socket, connectSocket } from "./lib/socket.js"; 
+import { socket, connectSocket } from "./lib/socket.js";
 import { Loader } from "lucide-react";
 import { Toaster, toast } from "react-hot-toast";
 import HomePage from "./Pages/HomePage";
@@ -26,13 +26,9 @@ const App = () => {
         socket.on("newMessage", (msg) => {
           setUnread((prev) => {
             const newCount = prev + 1;
-            toast.success(`📩 New ${newCount} message(s) from ${msg.senderid}`);
+            toast(`🔔 ${newCount} unread messages. Latest: ${msg.text || "📩 New message"}`);
             return newCount;
           });
-        });
-
-        socket.on("notification", (notif) => {
-          toast(notif.text, { icon: "🔔" });
         });
       }
     }
@@ -61,7 +57,7 @@ const App = () => {
         <Route path="/login" element={!authUser ? <LoginPage /> : <Navigate to="/" />} />
         <Route path="/profile" element={authUser ? <ProfilePage /> : <Navigate to="/login" />} />
       </Routes>
-      <Toaster/>
+      <Toaster />
     </>
   );
 };
