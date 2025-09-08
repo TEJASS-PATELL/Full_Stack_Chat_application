@@ -42,9 +42,9 @@ export const useChatStore = create(
 
           const messages = res.data.map((m) => ({
             ...m,
-            senderId: m.senderid,
-            receiverId: m.receiverid,
-            createdAt: m.createdat,
+            senderId: m.senderid || m.senderId,
+            receiverId: m.receiverid || m.receiverId,
+            createdAt: m.createdat || m.createdAt,
           }));
 
           set({ messages });
@@ -61,12 +61,16 @@ export const useChatStore = create(
         if (!selectedUser) return;
 
         try {
-          const res = await axiosInstance.post(`/messages/send/${selectedUser.id}`, messageData);
+          const res = await axiosInstance.post(
+            `/messages/send/${selectedUser.id}`,
+            messageData
+          );
+
           const newMsg = {
             ...res.data,
-            senderId: res.data.senderid,
-            receiverId: res.data.receiverid,
-            createdAt: res.data.createdat,
+            senderId: res.data.senderid || res.data.senderId,
+            receiverId: res.data.receiverid || res.data.receiverId,
+            createdAt: res.data.createdat || res.data.createdAt,
           };
 
           addMessage(newMsg);
@@ -77,9 +81,7 @@ export const useChatStore = create(
 
       addMessage: (message) => {
         set((state) => {
-          // Avoid duplicate messages
           if (state.messages.some((m) => m.id === message.id)) return state;
-
           return { messages: [...state.messages, message] };
         });
 
@@ -96,10 +98,12 @@ export const useChatStore = create(
         messageListenerRef = (newMessage) => {
           const msg = {
             ...newMessage,
-            senderId: newMessage.senderid,
-            receiverId: newMessage.receiverid,
-            createdAt: newMessage.createdat,
+            senderId: newMessage.senderid || newMessage.senderId,
+            receiverId: newMessage.receiverid || newMessage.receiverId,
+            createdAt: newMessage.createdat || newMessage.createdAt,
           };
+
+          console.log("📩 Incoming socket msg:", msg);
 
           const currentUser = get().selectedUser;
           const isForSelectedUser =
