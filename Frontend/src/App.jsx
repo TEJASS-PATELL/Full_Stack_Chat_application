@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./Store/useAuthStore";
-import { connectSocket, socket } from "./lib/socket.js";
+import { connectSocket } from "./lib/socket.js";
 import { Loader } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 import HomePage from "./Pages/HomePage";
@@ -22,8 +22,6 @@ const App = () => {
   useEffect(() => {
     if (authUser?.id) {
       connectSocket(authUser.id);
-      setSocket(socket); 
-
       subscribeToMessages();
 
       return () => {

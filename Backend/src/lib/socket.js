@@ -57,7 +57,7 @@ io.on("connection", (socket) => {
         io.to(receiverSocketId).emit("receiveMessage", savedMessage);
       }
 
-      socket.emit("receiveMessage", savedMessage); // sender ko bhi message dikhe
+      socket.emit("receiveMessage", savedMessage);
     } catch (err) {
       console.error("DB error (sendMessage):", err.stack);
     }
