@@ -35,6 +35,7 @@ const MessageInput = () => {
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!text.trim() && !imagePreview) return;
+    if (!selectedUser || !authUser) return;
 
     const tempMsg = {
       id: Date.now(),
@@ -64,7 +65,7 @@ const MessageInput = () => {
   const handleTyping = (e) => {
     const value = e.target.value;
     setText(value);
-    if (selectedUser && authUser) {
+    if (selectedUser && authUser && socket) {
       socket.emit("typing", {
         toUserId: selectedUser.id,
         userId: authUser.id,

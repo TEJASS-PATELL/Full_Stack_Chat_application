@@ -44,6 +44,25 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("sendMessage", async ({ fromUserId, toUserId, message }) => {
+    try {
+      const result = await pool.query(
+        "INSERT INTO messages(sender_id, receiver_id, message) VALUES($1, $2, $3) RETURNING *",
+        [fromUserId, toUserId, message]
+      );
+      const savedMessage = result.rows[0];
+
+      const receiverSocketId = userSocketMap[toUserId];
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("receiveMessage", savedMessage);
+      }
+
+      socket.emit("receiveMessage", savedMessage); // sender ko bhi message dikhe
+    } catch (err) {
+      console.error("DB error (sendMessage):", err.stack);
+    }
+  });
+
   socket.on("disconnect", async () => {
     console.log("Disconnected:", socket.id);
 

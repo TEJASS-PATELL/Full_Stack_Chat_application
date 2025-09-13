@@ -81,9 +81,7 @@ export const useChatStore = create(
       replaceTempMessage: (confirmedMsg) => {
         set((state) => {
           const updated = state.messages.map((m) =>
-            typeof m.id === "number" && m.id > 1e12
-              ? { ...confirmedMsg }
-              : m
+            typeof m.id === "number" && m.id > 1e12 ? { ...confirmedMsg } : m
           );
           if (!updated.some((m) => m.id === confirmedMsg.id)) {
             updated.push(confirmedMsg);
@@ -104,13 +102,13 @@ export const useChatStore = create(
           };
           get().addMessage(msg);
         };
-        socket.on("newMessage", messageListenerRef);
+        socket.on("receiveMessage", messageListenerRef); 
       },
 
       unsubscribeFromMessages: () => {
         const socket = useAuthStore.getState().socket;
         if (messageListenerRef && socket) {
-          socket.off("newMessage", messageListenerRef);
+          socket.off("receiveMessage", messageListenerRef); 
           messageListenerRef = null;
         }
       },

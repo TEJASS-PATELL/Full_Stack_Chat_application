@@ -15,30 +15,32 @@ const ChatContainer = () => {
     selectedUser,
     subscribeToMessages,
     unsubscribeFromMessages,
+    setTypingUserId,
   } = useChatStore();
 
   const { authUser, socket } = useAuthStore();
   const messageEndRef = useRef(null);
 
   useEffect(() => {
-    if (selectedUser) {
-      getMessages(selectedUser.id);
-      subscribeToMessages();
-      const handleTyping = ({ userId }) => {
-        useChatStore.getState().setTypingUserId(userId);
-        setTimeout(() => {
-          useChatStore.getState().setTypingUserId(null);
-        }, 2000);
-      };
+    if (!selectedUser || !socket) return;
 
-      socket.on("showTyping", handleTyping);
+    getMessages(selectedUser.id);
+    subscribeToMessages();
 
-      return () => {
-        unsubscribeFromMessages();
-        socket.off("showTyping", handleTyping);
-      };
-    }
-  }, [selectedUser]);
+    const handleTyping = ({ userId }) => {
+      setTypingUserId(userId);
+      setTimeout(() => {
+        setTypingUserId(null);
+      }, 2000);
+    };
+
+    socket.on("showTyping", handleTyping);
+
+    return () => {
+      unsubscribeFromMessages();
+      socket.off("showTyping", handleTyping);
+    };
+  }, [selectedUser, socket]);
 
   useEffect(() => {
     if (messageEndRef.current && messages.length > 0) {
@@ -65,8 +67,8 @@ const ChatContainer = () => {
             key={message.id}
             className={`message ${
               message.senderId === authUser.id
-                ? "message-incoming"
-                : "message-outgoing"
+                ? "message-outgoing"
+                : "message-incoming"
             }`}
           >
             <div className="avatar-wrapperr">
@@ -107,7 +109,6 @@ const ChatContainer = () => {
             </div>
           </div>
         ))}
-
         <div ref={messageEndRef} />
       </div>
       <MessageInput />
