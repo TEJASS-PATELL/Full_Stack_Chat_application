@@ -42,6 +42,7 @@ io.on("connection", (socket) => {
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", message);
     }
+    io.to(socket.id).emit("newMessage", message);
   });
 
   socket.on("typing", ({ toUserId, userId }) => {
