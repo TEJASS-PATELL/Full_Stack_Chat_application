@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import toast from "react-hot-toast";
 import { axiosInstance } from "../lib/axios";
 import { useAuthStore } from "./useAuthStore";
 
@@ -24,8 +23,8 @@ export const useChatStore = create(
         try {
           const res = await axiosInstance.get("/messages/users");
           set({ users: res.data });
-        } catch (error) {
-          toast.error(error.response?.data?.message || "Failed to fetch users");
+        } catch {
+          set({ users: [] });
         } finally {
           set({ isUsersLoading: false });
         }
@@ -35,10 +34,7 @@ export const useChatStore = create(
         set({ isMessagesLoading: true });
         try {
           const res = await axiosInstance.get(`/messages/${userId}`);
-          if (!res.data || !Array.isArray(res.data)) {
-            toast.error("Invalid response from server");
-            return;
-          }
+          if (!res.data || !Array.isArray(res.data)) return;
           const messages = res.data.map((m) => ({
             ...m,
             senderId: m.senderid || m.senderId,
@@ -46,15 +42,15 @@ export const useChatStore = create(
             createdAt: m.createdat || m.createdAt,
           }));
           set({ messages });
-        } catch (error) {
-          toast.error(error.response?.data?.message || "Failed to fetch messages");
+        } catch {
+          set({ messages: [] });
         } finally {
           set({ isMessagesLoading: false });
         }
       },
 
       sendMessage: async (messageData) => {
-        const { selectedUser, addMessage } = get();
+        const { selectedUser, replaceTempMessage } = get();
         if (!selectedUser) return;
         try {
           const res = await axiosInstance.post(
@@ -67,10 +63,8 @@ export const useChatStore = create(
             receiverId: res.data.receiverid || res.data.receiverId,
             createdAt: res.data.createdat || res.data.createdAt,
           };
-          addMessage(newMsg);
-        } catch (error) {
-          toast.error(error.response?.data?.message || "Failed to send message");
-        }
+          replaceTempMessage(newMsg);
+        } catch {}
       },
 
       addMessage: (message) => {
@@ -84,6 +78,20 @@ export const useChatStore = create(
         }
       },
 
+      replaceTempMessage: (confirmedMsg) => {
+        set((state) => {
+          const updated = state.messages.map((m) =>
+            typeof m.id === "number" && m.id > 1e12
+              ? { ...confirmedMsg }
+              : m
+          );
+          if (!updated.some((m) => m.id === confirmedMsg.id)) {
+            updated.push(confirmedMsg);
+          }
+          return { messages: updated };
+        });
+      },
+
       subscribeToMessages: () => {
         const socket = useAuthStore.getState().socket;
         if (!socket) return;
@@ -94,17 +102,7 @@ export const useChatStore = create(
             receiverId: newMessage.receiverid || newMessage.receiverId,
             createdAt: newMessage.createdat || newMessage.createdAt,
           };
-          const currentUser = get().selectedUser;
-          const authUser = useAuthStore.getState().authUser;
-          const isForSelectedUser =
-            msg.senderId === currentUser?.id || msg.receiverId === currentUser?.id;
           get().addMessage(msg);
-          if (msg.senderId !== authUser?.id && !isForSelectedUser) {
-            const shortMsg = msg.text
-              ? msg.text.split(" ").slice(0, 10).join(" ")
-              : "New message";
-            toast(`🔔 New message from user ${msg.senderId}: ${shortMsg}...`);
-          }
         };
         socket.on("newMessage", messageListenerRef);
       },

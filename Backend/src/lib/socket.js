@@ -37,14 +37,6 @@ io.on("connection", (socket) => {
   socket.emit("userId", userId);
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
-  socket.on("sendMessage", (message) => {
-    const receiverSocketId = userSocketMap[message.receiverId];
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("newMessage", message);
-    }
-    io.to(socket.id).emit("newMessage", message);
-  });
-
   socket.on("typing", ({ toUserId, userId }) => {
     const receiverSocketId = userSocketMap[toUserId];
     if (receiverSocketId) {
@@ -75,6 +67,5 @@ io.on("connection", (socket) => {
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
   });
 });
-
 
 module.exports = { app, server, io, getReceiverSocketId };

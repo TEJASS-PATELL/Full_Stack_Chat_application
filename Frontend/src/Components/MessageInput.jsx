@@ -14,7 +14,7 @@ const MessageInput = () => {
   const fileInputRef = useRef(null);
 
   const { authUser, socket } = useAuthStore();
-  const { sendMessage, selectedUser } = useChatStore();
+  const { sendMessage, selectedUser, addMessage } = useChatStore();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -22,7 +22,6 @@ const MessageInput = () => {
       toast.error("Please select an image file");
       return;
     }
-
     const reader = new FileReader();
     reader.onloadend = () => setImagePreview(reader.result);
     reader.readAsDataURL(file);
@@ -37,27 +36,34 @@ const MessageInput = () => {
     e.preventDefault();
     if (!text.trim() && !imagePreview) return;
 
+    const tempMsg = {
+      id: Date.now(),
+      senderId: authUser.id,
+      receiverId: selectedUser.id,
+      text: text.trim(),
+      image: imagePreview,
+      createdAt: new Date().toISOString(),
+    };
+    addMessage(tempMsg);
+
     try {
       await sendMessage({
-        senderId: authUser.id,
-        receiverId: selectedUser.id,
         text: text.trim(),
         image: imagePreview,
       });
-
-      setText("");
-      setImagePreview(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error) {
       console.error("Failed to send message:", error);
       toast.error("Failed to send message");
     }
+
+    setText("");
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleTyping = (e) => {
     const value = e.target.value;
     setText(value);
-
     if (selectedUser && authUser) {
       socket.emit("typing", {
         toUserId: selectedUser.id,
@@ -102,7 +108,6 @@ const MessageInput = () => {
           value={text}
           onChange={handleTyping}
         />
-
         <input
           type="file"
           accept="image/*"
@@ -110,7 +115,6 @@ const MessageInput = () => {
           ref={fileInputRef}
           onChange={handleImageChange}
         />
-
         <button
           type="button"
           className="icon-btn emoji-btn"
@@ -118,7 +122,6 @@ const MessageInput = () => {
         >
           <BsEmojiSmile size={25} />
         </button>
-
         <button
           type="button"
           className={`icon-btn image-upload-btn ${imagePreview ? "has-image" : ""}`}
@@ -126,7 +129,6 @@ const MessageInput = () => {
         >
           <Image size={25} />
         </button>
-
         <button
           type="submit"
           className="icon-btn send-buttonn"

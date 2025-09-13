@@ -66,14 +66,12 @@ const sendMessage = async (req, res) => {
 
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
-      io.to(receiverSocketId).emit("notification", {
-        type: "message",
-        senderName: `${req.user.fullname || "Someone"}`,
-        message: newMessage.text,
-      });
     }
 
-    io.to(getReceiverSocketId(senderId)).emit("newMessage", newMessage);
+    const senderSocketId = getReceiverSocketId(senderId);
+    if (senderSocketId) {
+      io.to(senderSocketId).emit("newMessage", newMessage);
+    }
 
     res.status(201).json(newMessage);
   } catch (error) {
