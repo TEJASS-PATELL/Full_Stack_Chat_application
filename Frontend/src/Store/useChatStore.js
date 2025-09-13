@@ -103,16 +103,18 @@ export const useChatStore = create(
             createdAt: newMessage.createdat || newMessage.createdAt,
           };
 
-          console.log("📩 Incoming socket msg:", msg);
+          console.log("Incoming socket msg:", msg);
 
           const currentUser = get().selectedUser;
           const isForSelectedUser =
             msg.senderId === currentUser?.id || msg.receiverId === currentUser?.id;
+          get().addMessage(msg);
 
-          if (isForSelectedUser) {
-            get().addMessage(msg);
-          } else {
-            get().addUnreadMessage(msg.senderId);
+          if (!isForSelectedUser) {
+            const shortMsg = msg.text
+              ? msg.text.split(" ").slice(0, 10).join(" ")
+              : "New message";
+            toast(`🔔 New message from user ${msg.senderId}: ${shortMsg}...`);
           }
         };
 

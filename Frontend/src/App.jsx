@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./Store/useAuthStore";
-import { connectSocket, socket } from "./lib/socket.js";
+import { connectSocket } from "./lib/socket.js";
 import { Loader } from "lucide-react";
-import { Toaster, toast } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import HomePage from "./Pages/HomePage";
 import SignUpPage from "./Pages/SignUpPage";
 import LoginPage from "./Pages/LoginPage";
@@ -23,18 +23,9 @@ const App = () => {
     if (authUser?.id) {
       connectSocket(authUser.id);
       subscribeToMessages();
-      if (socket) {
-        socket.on("notification", (notif) => {
-          const shortMsg = notif.message
-            ? notif.message.split(" ").slice(0, 10).join(" ")
-            : "📩 New message";
-          toast(`🔔 ${notif.senderName} sends: ${shortMsg}...`);
-        });
-      }
 
       return () => {
         unsubscribeFromMessages();
-        if (socket) socket.off("notification");
       };
     }
   }, [authUser, subscribeToMessages, unsubscribeFromMessages]);
