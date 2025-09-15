@@ -6,9 +6,19 @@ const LockModal = ({
   inputRefs,
   handlePinSubmit,
 }) => {
+  const handleSubmitClick = async () => {
+    await handlePinSubmit(); 
+  };
+
   return (
-    <div className="modal-overlay" onClick={() => setShowLockModal(false)}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="modal-overlay"
+      onClick={() => setShowLockModal(false)}
+    >
+      <div
+        className="modal-content"
+        onClick={(e) => e.stopPropagation()}
+      >
         <h3>Enter Chat PIN</h3>
 
         <div className="pin-input-container">
@@ -29,9 +39,7 @@ const LockModal = ({
         </div>
 
         <div className="modal-actions">
-          <button onClick={handlePinSubmit}>
-            Submit
-          </button>
+          <button onClick={handleSubmitClick}>Submit</button>
           <button
             className="cancel-btn"
             onClick={() => setShowLockModal(false)}

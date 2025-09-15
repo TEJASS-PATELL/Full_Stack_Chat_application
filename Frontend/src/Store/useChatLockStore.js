@@ -22,7 +22,6 @@ export const useChatLockStore = create((set, get) => ({
           )
         ).filter(Boolean)
       );
-
       set({ lockedUserIds: lockedIds });
     } catch (err) {
       console.error("Failed to fetch locked chats:", err);
@@ -33,20 +32,19 @@ export const useChatLockStore = create((set, get) => ({
 
   lockChat: async (userId, pin) => {
     set({ isLocking: true });
-    const prevLockedIds = new Set(get().lockedUserIds);
-    set((state) => ({
-      lockedUserIds: new Set(state.lockedUserIds).add(userId),
-    }));
-
     try {
       await axiosInstance.post(
         "/chat-lock/lock",
         { lockedUserId: userId, pin },
         { withCredentials: true }
       );
+      set((state) => {
+        const updated = new Set(state.lockedUserIds);
+        updated.add(userId);
+        return { lockedUserIds: updated };
+      });
       toast.success("Chat locked successfully!");
     } catch (err) {
-      set({ lockedUserIds: prevLockedIds });
       toast.error(err.response?.data?.message || "Failed to lock chat");
     } finally {
       set({ isLocking: false });
@@ -55,20 +53,22 @@ export const useChatLockStore = create((set, get) => ({
 
   unlockChat: async (userId, pin) => {
     set({ isLocking: true });
-    const prevLockedIds = new Set(get().lockedUserIds);
-    const updatedLockedIds = new Set(prevLockedIds);
-    updatedLockedIds.delete(userId);
-    set({ lockedUserIds: updatedLockedIds });
-
     try {
-      await axiosInstance.post(
+      const res = await axiosInstance.post(
         "/chat-lock/unlock",
         { lockedUserId: userId, pin },
         { withCredentials: true }
       );
-      toast.success("Chat unlocked");
+
+      if (res.data.success) {
+        set((state) => {
+          const updated = new Set(state.lockedUserIds);
+          updated.delete(userId);
+          return { lockedUserIds: updated };
+        });
+        toast.success("Chat unlocked successfully!");
+      }
     } catch (err) {
-      set({ lockedUserIds: prevLockedIds });
       toast.error(err.response?.data?.message || "Incorrect PIN or error occurred");
     } finally {
       set({ isLocking: false });

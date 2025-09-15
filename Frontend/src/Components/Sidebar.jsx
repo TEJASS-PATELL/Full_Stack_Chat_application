@@ -5,7 +5,7 @@ import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import SidebarHeader from "./SidebarHeader";
 import SidebarList from "./SidebarList";
 import LockModal from "./LockModel";
-import "./Sidebar.css"; 
+import "./Sidebar.css";
 import { FaBars } from "react-icons/fa";
 import { useChatLockStore } from "../Store/useChatLockStore";
 import toast from "react-hot-toast";
@@ -17,12 +17,12 @@ const Sidebar = () => {
 
   const [viewType, setViewType] = useState("chat");
   const [showLockModal, setShowLockModal] = useState(false);
-  const [pinInput, setPinInput] = useState(Array(6).fill(""));
   const [currentLockUserId, setCurrentLockUserId] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [pinInput, setPinInput] = useState(Array(6).fill(""));
   const inputRefs = useRef([]);
 
-  const clickTimerRef = useRef(null); 
+  const clickTimerRef = useRef(null);
 
   useEffect(() => {
     getUsers();
@@ -37,43 +37,6 @@ const Sidebar = () => {
     setCurrentLockUserId(userId);
     setShowLockModal(true);
     setPinInput(Array(6).fill(""));
-  };
-
-  const handlePinChange = (e, index) => {
-    const val = e.target.value;
-    if (!/^\d?$/.test(val)) return;
-
-    const updatedPin = [...pinInput];
-    updatedPin[index] = val;
-    setPinInput(updatedPin);
-
-    if (val && index < 5) inputRefs.current[index + 1]?.focus();
-  };
-
-  const handleBackspace = (e, index) => {
-    if (e.key === "Backspace" && !pinInput[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
-
-  const handlePinSubmit = async () => {
-    const pin = pinInput.join("");
-    if (pin.length !== 6 || !currentLockUserId) {
-      toast.error("Please enter a valid 6-digit PIN");
-      return;
-    }
-
-    if (isUserLocked(currentLockUserId)) {
-      await unlockChat(currentLockUserId, pin);
-      const unlockedUser = users.find((u) => u.id === currentLockUserId);
-      if (unlockedUser) setSelectedUser(unlockedUser);
-    } else {
-      await lockChat(currentLockUserId, pin);
-    }
-
-    setShowLockModal(false);
-    setPinInput(Array(6).fill(""));
-    setCurrentLockUserId(null);
   };
 
   const handleUserClick = (user) => {
@@ -97,6 +60,30 @@ const Sidebar = () => {
       clickTimerRef.current = null;
     }
     handleLockClick(e, userId);
+  };
+
+  const handlePinSubmit = async () => {
+    const pin = pinInput.join("");
+    if (pin.length !== 6 || !currentLockUserId) {
+      toast.error("Please enter a valid 6-digit PIN");
+      return;
+    }
+
+    try {
+      if (isUserLocked(currentLockUserId)) {
+        await unlockChat(currentLockUserId, pin);
+        if (!isUserLocked(currentLockUserId)) {
+          const unlockedUser = users.find((u) => u.id === currentLockUserId);
+          if (unlockedUser) setSelectedUser(unlockedUser);
+        }
+      } else {
+        await lockChat(currentLockUserId, pin);
+      }
+    } finally {
+      setShowLockModal(false);
+      setPinInput(Array(6).fill(""));
+      setCurrentLockUserId(null);
+    }
   };
 
   if (isUsersLoading) return <SidebarSkeleton />;
@@ -126,8 +113,7 @@ const Sidebar = () => {
         <LockModal
           setShowLockModal={setShowLockModal}
           pinInput={pinInput}
-          handlePinChange={handlePinChange}
-          handleBackspace={handleBackspace}
+          setPinInput={setPinInput}
           inputRefs={inputRefs}
           handlePinSubmit={handlePinSubmit}
         />
