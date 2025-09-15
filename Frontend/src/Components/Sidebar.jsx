@@ -1,14 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import { useChatStore } from "../Store/useChatStore";
 import { useAuthStore } from "../Store/useAuthStore";
+import { useChatLockStore } from "../Store/useChatLockStore";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import SidebarHeader from "./SidebarHeader";
 import SidebarList from "./SidebarList";
 import LockModal from "./LockModel";
-import "./Sidebar.css";
 import { FaBars } from "react-icons/fa";
-import { useChatLockStore } from "../Store/useChatLockStore";
 import toast from "react-hot-toast";
+import "./Sidebar.css";
 
 const Sidebar = () => {
   const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading, unreadMessages } = useChatStore();
@@ -64,6 +64,7 @@ const Sidebar = () => {
 
   const handlePinSubmit = async () => {
     const pin = pinInput.join("");
+
     if (pin.length !== 6 || !currentLockUserId) {
       toast.error("Please enter a valid 6-digit PIN");
       return;
