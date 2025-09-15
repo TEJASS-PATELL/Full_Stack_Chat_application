@@ -15,6 +15,7 @@ export const useChatStore = create(
       unreadMessages: {},
       isUsersLoading: false,
       isMessagesLoading: false,
+
       setTypingUserId: (id) => set({ typingUserId: id }),
 
       getUsers: async () => {
@@ -63,6 +64,7 @@ export const useChatStore = create(
           createdAt: new Date().toISOString(),
           pending: true,
         };
+
         set({ messages: [...messages, tempMsg] });
 
         try {
@@ -85,16 +87,25 @@ export const useChatStore = create(
           const updated = state.messages.map((m) =>
             m.id === tempId ? { ...confirmedMsg } : m
           );
+
           if (!updated.some((m) => m.id === confirmedMsg.id)) {
             updated.push(confirmedMsg);
           }
+
           return { messages: updated };
         }),
 
       addMessage: (message) =>
         set((state) => {
-          if (state.messages.some((m) => m.id === message.id)) return state;
+          if (
+            state.messages.some(
+              (m) => m.id === message.id || m.tempId === message.tempId
+            )
+          )
+            return state;
+
           const newMessages = [...state.messages, message];
+
           const { selectedUser } = get();
           if (message.senderId !== selectedUser?.id) {
             get().addUnreadMessage(message.senderId);

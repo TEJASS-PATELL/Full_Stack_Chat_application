@@ -64,13 +64,11 @@ const ChatContainer = () => {
       <div className="messages-wrapper">
         {messages.map((message) => (
           <div
-            key={message.id}
-            className={`message ${
-              message.senderId === authUser.id
+            key={message.tempId || message.id}
+            className={`message ${message.senderId === authUser.id
                 ? "message-incoming"
                 : "message-outgoing"
-            }`}
-          >
+              }`}>
             <div className="avatar-wrapperr">
               <img
                 src={
