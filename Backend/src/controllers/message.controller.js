@@ -43,7 +43,7 @@ const getMessages = async (req, res) => {
 
 const sendMessage = async (req, res) => {
   try {
-    const { text, image } = req.body;
+    const { text, image, tempId } = req.body;
     const { id: receiverId } = req.params;
     const senderId = req.user.id;
 
@@ -66,12 +66,19 @@ const sendMessage = async (req, res) => {
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("receiveMessage", newMessage);
     }
+
+    const senderSocketId = getReceiverSocketId(senderId);
+    if (senderSocketId) {
+      io.to(senderSocketId).emit("receiveMessage", { ...newMessage, tempId });
+    }
+
     res.status(201).json(newMessage);
   } catch (error) {
     console.error("Error in sendMessage controller:", error.stack);
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 module.exports = {
   getUsersForSidebar,
