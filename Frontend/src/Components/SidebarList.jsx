@@ -39,7 +39,7 @@ const SidebarList = ({
             <div className="sidebar-user-container">
               <div className="sidebar-space">
                 <div className="sidebar-avatar" style={{ marginRight: 10, position: "relative" }}>
-                  <img src={user.profilepic || "/person.png"} alt="User" className="avatar-imgg" />
+                  <img src={user.profilepic || "user.png"} alt="User" className="avatar-imgg" />
                   <span className={`status-indicatorr ${isOnline ? "online" : "offline"}`} />
                 </div>
 
