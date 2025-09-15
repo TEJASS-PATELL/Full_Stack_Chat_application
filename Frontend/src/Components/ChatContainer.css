@@ -228,4 +228,10 @@
     max-width: 90vw;
     border-radius: 8px;
   }
+    .message {
+      max-width: 85%;
+      font-size: 14px;
+      padding: 10px 0px;
+  }
+  
 }
