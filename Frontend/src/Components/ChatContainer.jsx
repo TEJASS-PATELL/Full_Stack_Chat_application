@@ -67,8 +67,8 @@ const ChatContainer = () => {
             key={message.id}
             className={`message ${
               message.senderId === authUser.id
-                ? "message-outgoing"
-                : "message-incoming"
+                ? "message-incoming"
+                : "message-outgoing"
             }`}
           >
             <div className="avatar-wrapperr">
