@@ -56,8 +56,6 @@ io.on("connection", (socket) => {
       if (receiverSocketId) {
         io.to(receiverSocketId).emit("receiveMessage", savedMessage);
       }
-
-      socket.emit("receiveMessage", savedMessage);
     } catch (err) {
       console.error("DB error (sendMessage):", err.stack);
     }

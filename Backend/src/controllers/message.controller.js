@@ -66,12 +66,6 @@ const sendMessage = async (req, res) => {
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("receiveMessage", newMessage);
     }
-
-    const senderSocketId = getReceiverSocketId(senderId);
-    if (senderSocketId) {
-      io.to(senderSocketId).emit("receiveMessage", newMessage);
-    }
-
     res.status(201).json(newMessage);
   } catch (error) {
     console.error("Error in sendMessage controller:", error.stack);

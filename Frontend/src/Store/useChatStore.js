@@ -11,18 +11,17 @@ export const useChatStore = create(
       messages: [],
       users: [],
       selectedUser: null,
-      isUsersLoading: false,
-      isMessagesLoading: false,
       typingUserId: null,
       unreadMessages: {},
-
+      isUsersLoading: false,
+      isMessagesLoading: false,
       setTypingUserId: (id) => set({ typingUserId: id }),
 
       getUsers: async () => {
         set({ isUsersLoading: true });
         try {
-          const res = await axiosInstance.get("/messages/users");
-          set({ users: res.data });
+          const { data } = await axiosInstance.get("/messages/users");
+          set({ users: data || [] });
         } catch {
           set({ users: [] });
         } finally {
@@ -33,15 +32,16 @@ export const useChatStore = create(
       getMessages: async (userId) => {
         set({ isMessagesLoading: true });
         try {
-          const res = await axiosInstance.get(`/messages/${userId}`);
-          if (!res.data || !Array.isArray(res.data)) return;
-          const messages = res.data.map((m) => ({
-            ...m,
-            senderId: m.senderid || m.senderId,
-            receiverId: m.receiverid || m.receiverId,
-            createdAt: m.createdat || m.createdAt,
-          }));
-          set({ messages });
+          const { data } = await axiosInstance.get(`/messages/${userId}`);
+          if (!Array.isArray(data)) return;
+          set({
+            messages: data.map((m) => ({
+              ...m,
+              senderId: m.senderid || m.senderId,
+              receiverId: m.receiverid || m.receiverId,
+              createdAt: m.createdat || m.createdAt,
+            })),
+          });
         } catch {
           set({ messages: [] });
         } finally {
@@ -50,49 +50,63 @@ export const useChatStore = create(
       },
 
       sendMessage: async (messageData) => {
-        const { selectedUser, replaceTempMessage } = get();
-        if (!selectedUser) return;
-        try {
-          const res = await axiosInstance.post(
-            `/messages/send/${selectedUser.id}`,
-            messageData
-          );
-          const newMsg = {
-            ...res.data,
-            senderId: res.data.senderid || res.data.senderId,
-            receiverId: res.data.receiverid || res.data.receiverId,
-            createdAt: res.data.createdat || res.data.createdAt,
-          };
-          replaceTempMessage(newMsg);
-        } catch {}
-      },
+        const { selectedUser, messages } = get();
+        const authUser = useAuthStore.getState().authUser;
+        if (!selectedUser || !authUser) return;
 
-      addMessage: (message) => {
-        set((state) => {
-          if (state.messages.some((m) => m.id === message.id)) return state;
-          return { messages: [...state.messages, message] };
-        });
-        const { selectedUser } = get();
-        if (message.senderId !== selectedUser?.id) {
-          get().addUnreadMessage(message.senderId);
+        const tempId = Date.now();
+        const tempMsg = {
+          id: tempId,
+          text: messageData.text,
+          senderId: authUser.id,
+          receiverId: selectedUser.id,
+          createdAt: new Date().toISOString(),
+          pending: true,
+        };
+        set({ messages: [...messages, tempMsg] });
+
+        try {
+          await axiosInstance.post(`/messages/send/${selectedUser.id}`, {
+            ...messageData,
+            tempId,
+          });
+        } catch (err) {
+          console.error("Send message error:", err);
+          set((state) => ({
+            messages: state.messages.map((m) =>
+              m.id === tempId ? { ...m, failed: true } : m
+            ),
+          }));
         }
       },
 
-      replaceTempMessage: (confirmedMsg) => {
+      replaceTempMessage: (confirmedMsg, tempId) =>
         set((state) => {
           const updated = state.messages.map((m) =>
-            typeof m.id === "number" && m.id > 1e12 ? { ...confirmedMsg } : m
+            m.id === tempId ? { ...confirmedMsg } : m
           );
           if (!updated.some((m) => m.id === confirmedMsg.id)) {
             updated.push(confirmedMsg);
           }
           return { messages: updated };
-        });
-      },
+        }),
+
+      addMessage: (message) =>
+        set((state) => {
+          if (state.messages.some((m) => m.id === message.id)) return state;
+          const newMessages = [...state.messages, message];
+          const { selectedUser } = get();
+          if (message.senderId !== selectedUser?.id) {
+            get().addUnreadMessage(message.senderId);
+          }
+
+          return { messages: newMessages };
+        }),
 
       subscribeToMessages: () => {
         const socket = useAuthStore.getState().socket;
         if (!socket) return;
+
         messageListenerRef = (newMessage) => {
           const msg = {
             ...newMessage,
@@ -100,37 +114,38 @@ export const useChatStore = create(
             receiverId: newMessage.receiverid || newMessage.receiverId,
             createdAt: newMessage.createdat || newMessage.createdAt,
           };
-          get().addMessage(msg);
+
+          const authUser = useAuthStore.getState().authUser;
+
+          if (msg.senderId === authUser?.id && newMessage.tempId) {
+            get().replaceTempMessage(msg, newMessage.tempId);
+          } else {
+            get().addMessage(msg);
+          }
         };
-        socket.on("receiveMessage", messageListenerRef); 
+
+        socket.on("receiveMessage", messageListenerRef);
       },
 
       unsubscribeFromMessages: () => {
         const socket = useAuthStore.getState().socket;
         if (messageListenerRef && socket) {
-          socket.off("receiveMessage", messageListenerRef); 
+          socket.off("receiveMessage", messageListenerRef);
           messageListenerRef = null;
         }
       },
 
-      setSelectedUser: (selectedUser) => {
-        if (!selectedUser) {
-          set({ selectedUser: null });
-          return;
-        }
+      setSelectedUser: (selectedUser) =>
         set((state) => {
+          if (!selectedUser) return { selectedUser: null };
           const updatedUnread = { ...state.unreadMessages };
           delete updatedUnread[selectedUser.id];
           return { selectedUser, unreadMessages: updatedUnread };
-        });
-      },
+        }),
 
       addUnreadMessage: (userId) =>
         set((state) => ({
-          unreadMessages: {
-            ...state.unreadMessages,
-            [userId]: true,
-          },
+          unreadMessages: { ...state.unreadMessages, [userId]: true },
         })),
     }),
     {
