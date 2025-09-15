@@ -332,7 +332,6 @@
   width: 48px;
   height: 56px;
   font-size: 22px;
-  font-weight: bold;
   text-align: center;
   border-radius: 10px;
   border: 2px solid #d1d5db;
@@ -367,12 +366,8 @@
 }
 
 .modal-actions .cancel-btn {
-  background: #f3f4f6;
-  color: #374151;
-}
-
-.modal-actions .cancel-btn:hover {
   background: #e5e7eb;
+  color: #000000;
 }
 
 @keyframes fadeIn {

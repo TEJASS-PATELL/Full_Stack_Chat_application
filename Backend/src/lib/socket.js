@@ -66,9 +66,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", async () => {
     console.log("Disconnected:", socket.id);
 
-    const disconnectedUserId = Object.keys(userSocketMap).find(
-      (key) => userSocketMap[key] === socket.id
-    );
+    const disconnectedUserId = Object.keys(userSocketMap).find((key) => userSocketMap[key] === socket.id);
 
     if (disconnectedUserId) {
       delete userSocketMap[disconnectedUserId];
