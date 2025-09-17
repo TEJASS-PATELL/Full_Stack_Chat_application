@@ -195,13 +195,13 @@
   }
 
   .message-bubble {
-    padding: 12px 55px 12px 15px;
+    padding: 10px 0px 10px 20px;
     font-size: 14px;
   }
 
   .avatarr {
-    width: 36px;
-    height: 36px;
+    width: 35px;
+    height: 35px;
   }
 
   .timestamp {
@@ -217,7 +217,7 @@
 
   .message-bubble p {
     font-size: 14px;
-    padding-right: 28px;
+    margin-bottom: 8px;
   }
 
   .message-input-container {
@@ -233,7 +233,7 @@
   }
 
   .message {
-    max-width: 85%;
+    max-width: 80%;
     font-size: 14px;
     padding: 10px 0px;
   }
