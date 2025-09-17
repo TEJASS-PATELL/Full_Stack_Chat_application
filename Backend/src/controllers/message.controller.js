@@ -1,4 +1,4 @@
-const pool = require("../lib/db"); 
+const pool = require("../lib/db");
 const cloudinary = require("../lib/cloudinary");
 const { getReceiverSocketId, io } = require("../lib/socket");
 
@@ -15,7 +15,7 @@ const getUsersForSidebar = async (req, res) => {
 
     res.status(200).json(filteredUsers);
   } catch (error) {
-    console.error("Error in getUsersForSidebar:", error.stack);
+    console.error(error.stack);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -36,34 +36,25 @@ const getMessages = async (req, res) => {
 
     res.status(200).json(messages);
   } catch (error) {
-    console.error("Error in getMessages controller:", error.stack);
+    console.error(error.stack);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
 const sendMessage = async (req, res) => {
   try {
-    if (!req.user) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    if (!req.user) return res.status(401).json({ error: "Unauthorized" });
 
     const senderId = req.user.id;
     const { id: receiverId } = req.params;
     const { text, image, tempId } = req.body;
 
-    if (!text && !image) {
-      return res.status(400).json({ error: "Message text or image required" });
-    }
+    if (!text && !image) return res.status(400).json({ error: "Message text or image required" });
 
     let imageUrl = null;
     if (image) {
-      try {
-        const uploadResponse = await cloudinary.uploader.upload(image);
-        imageUrl = uploadResponse.secure_url;
-      } catch (err) {
-        console.error("Cloudinary upload error:", err);
-        return res.status(500).json({ error: "Image upload failed" });
-      }
+      const uploadResponse = await cloudinary.uploader.upload(image);
+      imageUrl = uploadResponse.secure_url;
     }
 
     const result = await pool.query(
@@ -85,19 +76,15 @@ const sendMessage = async (req, res) => {
     };
 
     const receiverSocketId = getReceiverSocketId(receiverId);
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("receiveMessage", normalizedMessage);
-    }
+    if (receiverSocketId) io.to(receiverSocketId).emit("receiveMessage", normalizedMessage);
 
     const senderSocketId = getReceiverSocketId(senderId);
-    if (senderSocketId) {
-      io.to(senderSocketId).emit("messageSent", { ...normalizedMessage, tempId });
-    }
+    if (senderSocketId) io.to(senderSocketId).emit("messageSent", { ...normalizedMessage, tempId });
 
-    return res.status(201).json(normalizedMessage);
+    res.status(201).json(normalizedMessage);
   } catch (error) {
-    console.error("sendMessage error:", error.stack);
-    return res.status(500).json({ error: "Internal server error" });
+    console.error(error.stack);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 

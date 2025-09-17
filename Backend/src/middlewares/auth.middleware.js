@@ -9,16 +9,16 @@ const protectRoute = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_ID);
 
     const { rows } = await pool.query(
-      `SELECT id, fullname, email, profilepic, createdat FROM users WHERE id = $1`,
+      "SELECT id, fullname, email, profilepic, createdat FROM users WHERE id = $1",
       [decoded.userId]
     );
 
     if (!rows[0]) return res.status(404).json({ message: "User not found" });
+
     await pool.query("UPDATE users SET lastseen = NOW() WHERE id = $1", [decoded.userId]);
     req.user = rows[0];
     next();
   } catch (error) {
-    // console.error("Error in protectRoute middleware:", error.stack);
     res.status(500).json({ message: "Internal server error" });
   }
 };
