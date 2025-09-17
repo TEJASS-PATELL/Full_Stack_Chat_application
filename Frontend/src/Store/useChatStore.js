@@ -72,20 +72,21 @@ export const useChatStore = create(
             { ...messageData, tempId }
           );
 
-          // Replace temp message with actual message from backend
           set((state) => ({
             messages: state.messages.map((m) =>
               m.id === tempId ? { ...savedMsg, senderId: authUser.id } : m
             ),
           }));
+
+          return savedMsg;
         } catch (err) {
           console.error("Send message error:", err);
-          // Mark message as failed
           set((state) => ({
             messages: state.messages.map((m) =>
               m.id === tempId ? { ...m, failed: true } : m
             ),
           }));
+          throw err;
         }
       },
 
@@ -103,7 +104,15 @@ export const useChatStore = create(
 
           const authUser = useAuthStore.getState().authUser;
 
-          // Avoid adding messages already in the store
+          if (msg.senderId === authUser?.id) {
+            set((state) => ({
+              messages: state.messages.map((m) =>
+                m.id === msg.tempId ? { ...msg, pending: false } : m
+              ),
+            }));
+            return;
+          }
+
           const exists = get().messages.some((m) => m.id === msg.id);
           if (exists) return;
 
@@ -127,12 +136,12 @@ export const useChatStore = create(
           const updatedUnread = { ...state.unreadMessages };
           delete updatedUnread[selectedUser.id];
           return { selectedUser, unreadMessages: updatedUnread };
-        }),
+      }),
 
       addUnreadMessage: (userId) =>
         set((state) => ({
           unreadMessages: { ...state.unreadMessages, [userId]: true },
-        })),
+      })),
     }),
     {
       name: "chat-store",

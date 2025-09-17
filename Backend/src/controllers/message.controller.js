@@ -43,14 +43,27 @@ const getMessages = async (req, res) => {
 
 const sendMessage = async (req, res) => {
   try {
-    const { text, image, tempId } = req.body;
-    const { id: receiverId } = req.params;
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
     const senderId = req.user.id;
+    const { id: receiverId } = req.params;
+    const { text, image, tempId } = req.body;
+
+    if (!text && !image) {
+      return res.status(400).json({ error: "Message text or image required" });
+    }
 
     let imageUrl = null;
     if (image) {
-      const uploadResponse = await cloudinary.uploader.upload(image);
-      imageUrl = uploadResponse.secure_url;
+      try {
+        const uploadResponse = await cloudinary.uploader.upload(image);
+        imageUrl = uploadResponse.secure_url;
+      } catch (err) {
+        console.error("Cloudinary upload error:", err);
+        return res.status(500).json({ error: "Image upload failed" });
+      }
     }
 
     const result = await pool.query(
@@ -81,10 +94,10 @@ const sendMessage = async (req, res) => {
       io.to(senderSocketId).emit("messageSent", { ...normalizedMessage, tempId });
     }
 
-    res.status(201).json(normalizedMessage);
+    return res.status(201).json(normalizedMessage);
   } catch (error) {
-    console.error("Error in sendMessage controller:", error.stack);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("sendMessage error:", error.stack);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 

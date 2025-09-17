@@ -23,6 +23,7 @@ const ChatContainer = () => {
 
   useEffect(() => {
     if (!socket) return;
+
     const handleTyping = ({ userId }) => {
       setTypingUserId(userId);
       setTimeout(() => setTypingUserId(null), 2000);
@@ -43,10 +44,11 @@ const ChatContainer = () => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const listData = useMemo(
-    () => ({ messages, authUser, selectedUser }),
-    [messages, authUser, selectedUser]
-  );
+  const listData = useMemo(() => ({ messages, authUser, selectedUser }), [
+    messages,
+    authUser,
+    selectedUser,
+  ]);
 
   if (isMessagesLoading) {
     return (
@@ -64,7 +66,7 @@ const ChatContainer = () => {
       <div className="messages-wrapper">
         {messages.map((msg, index) => (
           <MessageContainer
-            key={msg.id || index+1}  
+            key={msg.id || index + 1}
             index={index}
             data={listData}
           />
