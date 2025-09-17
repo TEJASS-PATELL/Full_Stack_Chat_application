@@ -1,4 +1,4 @@
-const pool = require("../lib/db"); 
+const pool = require("../lib/db");
 const { generateToken } = require("../lib/utils");
 const bcrypt = require("bcryptjs");
 const cloudinary = require("../lib/cloudinary");
@@ -106,7 +106,8 @@ const logout = async (req, res) => {
     res.clearCookie("jwt", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Lax",
+      sameSite: "None",
+      path: "/",
     });
 
     res.status(200).json({ message: "Logged out successfully" });

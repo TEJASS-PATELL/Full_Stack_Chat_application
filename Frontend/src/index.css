@@ -5,22 +5,6 @@
     font-family: "Montserrat", sans-serif;
 }
 
-:root {
-  --primary-bg: #f8f9fa;        
-  --secondary-bg: #ffffff;       /* White for cards/containers */
-  --sidebar-bg: #1e1e2d;         /* Dark blue/purple sidebar */
-  --chat-bg: #e5ddd5;           /* Classic chat background texture */
-  --accent-primary: #5b51d8;   
-  --accent-secondary: #007bff;   
-  --text-primary: #121212;   
-  --text-secondary: #6c757d;     /* Lighter text for secondary info */
-  --text-inverted: #ffffff;      /* White text for dark backgrounds */
-  --status-online: #28a745;      /* Green for online status */
-  --status-offline: #dc3545;    
-  --border-color: #dee2e6;       /* Subtle border color */
-  --shadow-color: rgba(0, 0, 0, 0.08);
-}
-
 body {
     background-color: rgb(255, 255, 255);
     display: block;

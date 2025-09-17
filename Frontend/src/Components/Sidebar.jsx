@@ -14,8 +14,6 @@ const Sidebar = () => {
   const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading, unreadMessages } = useChatStore();
   const { onlineUsers } = useAuthStore();
   const { fetchLockedChats, lockChat, unlockChat, isUserLocked } = useChatLockStore();
-
-  const [viewType, setViewType] = useState("chat");
   const [showLockModal, setShowLockModal] = useState(false);
   const [currentLockUserId, setCurrentLockUserId] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -96,16 +94,14 @@ const Sidebar = () => {
       </button>
 
       <div className={`sidebarr ${isSidebarOpen ? "open" : ""}`}>
-        <SidebarHeader viewType={viewType} setViewType={setViewType} />
+        <SidebarHeader/>
         <SidebarList
-          viewType={viewType}
           users={users}
           onlineUsers={onlineUsers}
           selectedUser={selectedUser}
           handleUserClick={handleUserClick}
           handleUserDoubleClick={handleUserDoubleClick}
           isUserLocked={isUserLocked}
-          unreadMessages={unreadMessages}
           setIsSidebarOpen={setIsSidebarOpen}
         />
       </div>

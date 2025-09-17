@@ -18,7 +18,6 @@ const SidebarList = ({
   selectedUser,
   handleUserClick,
   handleUserDoubleClick,
-  unreadMessages,
 }) => {
   return (
     <div className="sidebar-list">
@@ -27,7 +26,6 @@ const SidebarList = ({
       {users.map((user) => {
         const isOnline = onlineUsers.includes(String(user.id));
         const isSelected = selectedUser?.id === user.id;
-        const hasUnread = unreadMessages[user.id];
 
         return (
           <div
@@ -35,7 +33,7 @@ const SidebarList = ({
             onClick={() => handleUserClick(user)}
             onDoubleClick={(e) => handleUserDoubleClick(e, user.id)}
             className={`sidebar-user ${isSelected ? "selected" : ""}`}
-          >
+          > 
             <div className="sidebar-user-container">
               <div className="sidebar-space">
                 <div className="sidebar-avatar" style={{ marginRight: 10, position: "relative" }}>
@@ -45,22 +43,10 @@ const SidebarList = ({
 
                 <div style={{ flex: 1 }}>
                   <span className="sidebar-username">{user.fullname || "User"}</span>
-
-                  {hasUnread ? (
-                    <div className="new-message-text">Incoming message</div>
-                  ) : (
                     <div className="sidebar-lastseen-only">
-                      {isOnline ? (
-                        <span className="status-online">Online</span>
-                      ) : user.lastSeen ? (
-                        <span className="status-lastseen">
-                          Last seen {formatLastSeen(user.lastSeen)}
-                        </span>
-                      ) : (
-                        <span className="status-offline">Offline</span>
-                      )}
+                      {isOnline ? <span className="status-online">Online</span> : <span className="status-lastseen">
+                          Last seen {formatLastSeen(user.lastSeen)} </span>}
                     </div>
-                  )}
                 </div>
               </div>
             </div>

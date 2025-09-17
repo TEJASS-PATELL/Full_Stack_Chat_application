@@ -1,13 +1,11 @@
-const SidebarHeader = ({ viewType, setViewType }) => {
+const SidebarHeader = () => {
     return (
         <div className="sidebar-header">
             <div className="sidebar-toggle">
-                <button
-                    className={`toggle-btn ${viewType === "chat" ? "active" : ""}`}
-                    onClick={() => setViewType("chat")}>
+                <div className="toggle-btn chat active">
                     <img src="person.png" className="sidebar-icon" alt="Contact" />
                     <span className="sidebar-btn-text">Contact</span>
-                </button>
+                </div>
             </div>
         </div>
     );

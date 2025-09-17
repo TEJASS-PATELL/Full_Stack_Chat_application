@@ -53,7 +53,7 @@ const MessageInput = () => {
         image: imagePreview,
       });
     } catch (error) {
-      console.error("Failed to send message:", error);
+      // console.error("Failed to send message:", error);
       toast.error("Failed to send message");
     }
 

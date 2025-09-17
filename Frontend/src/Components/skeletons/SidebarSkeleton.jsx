@@ -7,11 +7,13 @@ const SidebarSkeleton = () => {
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <div className="sidebar-header-content">
-          <Users className="sidebar-icon" />
-          <span className="sidebar-title">Contacts</span>
+            <div className="sidebar-toggle">
+                <div className="toggle-btn chat active">
+                    <img src="person.png" className="sidebar-icon" alt="Contact" />
+                    <span className="sidebar-btn-text">Contact</span>
+                </div>
+            </div>
         </div>
-      </div>
 
       <div className="sidebar-contacts">
         {skeletonContacts.map((_, idx) => (

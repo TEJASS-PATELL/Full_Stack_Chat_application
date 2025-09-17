@@ -17,7 +17,7 @@ const NoChatSelected = () => {
             Choose a chat from the list to send Messages instantly.
           </p>
           <p className="instruction-text">
-            You can share text, images, and videos with your contacts.
+            You can share text, images with your contacts.
           </p>
           <p className="instruction-text">
             Stay connected and never miss a Message.
@@ -27,7 +27,6 @@ const NoChatSelected = () => {
     </div>
   );
 };
-
 
 export default NoChatSelected;
 
