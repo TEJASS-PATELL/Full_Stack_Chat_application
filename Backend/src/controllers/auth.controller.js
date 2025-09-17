@@ -69,7 +69,7 @@ const login = async (req, res) => {
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: "Password is incorrect" });
     }
 
     await pool.query(
@@ -123,8 +123,8 @@ const updateProfile = async (req, res) => {
     const { profilepic } = req.body;
     const userId = req.user?.id;
 
-    if (!userId) return res.status(401).json({ message: "Unauthorized: User ID missing" });
-    if (!profilepic) return res.status(400).json({ message: "Profile pic is required" });
+    if (!userId) return res.status(401).json({ message: "User ID is missing" });
+    if (!profilepic) return res.status(400).json({ message: "Profile picture is required" });
 
     const uploadResponse = await cloudinary.uploader.upload(profilepic, { folder: "user_profiles" });
 
@@ -183,22 +183,20 @@ const checkAuth = async (req, res) => {
 const deleteAccount = async (req, res) => {
   try {
     const userId = req.user.id;
-    if (!userId) return res.status(401).json({ message: "Unauthorized: User ID missing" });
+    if (!userId) return res.status(401).json({ message: "User ID is missing" });
 
     const { rowCount } = await pool.query(
       `DELETE FROM users WHERE id = $1`,
       [userId]
     );
 
-    res.clearCookie("jwt", {
+      res.clearCookie("jwt", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Lax",
     });
 
-    if (rowCount === 0) return res.status(404).json({ message: "User not found" });
-
-    res.status(200).json({ message: "Account deleted successfully" });
+    return res.status(200).json({ message: "Account deleted successfully" });
 
   } catch (error) {
     console.error("deleteAccount error:", error.stack);

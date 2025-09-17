@@ -14,15 +14,11 @@ const protectRoute = async (req, res, next) => {
     );
 
     if (!rows[0]) return res.status(404).json({ message: "User not found" });
-
     await pool.query("UPDATE users SET lastseen = NOW() WHERE id = $1", [decoded.userId]);
-
     req.user = rows[0];
     next();
   } catch (error) {
-    console.error("Error in protectRoute middleware:", error.stack);
-    if (error.name === "JsonWebTokenError") return res.status(401).json({ message: "Invalid token" });
-    if (error.name === "TokenExpiredError") return res.status(401).json({ message: "Token expired" });
+    // console.error("Error in protectRoute middleware:", error.stack);
     res.status(500).json({ message: "Internal server error" });
   }
 };
