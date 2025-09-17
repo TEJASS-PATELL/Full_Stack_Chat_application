@@ -14,7 +14,7 @@ const MessageInput = () => {
   const fileInputRef = useRef(null);
 
   const { authUser, socket } = useAuthStore();
-  const { sendMessage, selectedUser, addMessage } = useChatStore();
+  const { sendMessage, selectedUser } = useChatStore();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -33,34 +33,32 @@ const MessageInput = () => {
   };
 
   const handleSendMessage = async (e) => {
-    e.preventDefault();
-    if (!text.trim() && !imagePreview) return;
-    if (!selectedUser || !authUser) return;
+  e.preventDefault();
+  if (!text.trim() && !imagePreview) return;
+  if (!selectedUser || !authUser) return;
 
-    const tempMsg = {
-      id: Date.now(),
-      senderId: authUser.id,
-      receiverId: selectedUser.id,
-      text: text.trim(),
-      image: imagePreview,
-      createdAt: new Date().toISOString(),
-    };
-    addMessage(tempMsg);
-
-    try {
-      await sendMessage({
-        text: text.trim(),
-        image: imagePreview,
-      });
-    } catch (error) {
-      // console.error("Failed to send message:", error);
-      toast.error("Failed to send message");
-    }
-
-    setText("");
-    setImagePreview(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+  const tempMsg = {
+    id: Date.now(),
+    senderId: authUser.id,
+    receiverId: selectedUser.id,
+    text: text.trim(),
+    image: imagePreview,
+    createdAt: new Date().toISOString(),
   };
+
+  setText("");
+  setImagePreview(null);
+  if (fileInputRef.current) fileInputRef.current.value = "";
+
+  try {
+    await sendMessage({
+      text: tempMsg.text,
+      image: tempMsg.image,
+    });
+  } catch (error) {
+    toast.error("Failed to send message");
+  }
+};
 
   const handleTyping = (e) => {
     const value = e.target.value;

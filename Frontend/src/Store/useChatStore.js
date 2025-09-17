@@ -35,8 +35,7 @@ export const useChatStore = create(
           const { data } = await axiosInstance.get(`/messages/${userId}`);
           if (!Array.isArray(data)) return;
           set({
-            messages: data.map((m) => ({
-              ...m,
+            messages: data.map((m) => ({...m,
               senderId: m.senderid || m.senderId,
               receiverId: m.receiverid || m.receiverId,
               createdAt: m.createdat || m.createdAt,
@@ -66,10 +65,7 @@ export const useChatStore = create(
         set({ messages: [...messages, tempMsg] });
 
         try {
-          await axiosInstance.post(`/messages/send/${selectedUser.id}`, {
-            ...messageData,
-            tempId,
-          });
+          await axiosInstance.post(`/messages/send/${selectedUser.id}`, { ...messageData, tempId });
         } catch (err) {
           console.error("Send message error:", err);
           set((state) => ({
@@ -88,9 +84,8 @@ export const useChatStore = create(
           if (message.senderId !== selectedUser?.id) {
             get().addUnreadMessage(message.senderId);
           }
-
           return { messages: newMessages };
-        }),
+      }),
 
       subscribeToMessages: () => {
         const socket = useAuthStore.getState().socket;
