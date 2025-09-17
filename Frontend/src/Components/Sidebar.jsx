@@ -9,6 +9,7 @@ import LockModal from "./LockModel";
 import { FaBars } from "react-icons/fa";
 import toast from "react-hot-toast";
 import "./Sidebar.css";
+import { Loader } from "lucide-react";
 
 const Sidebar = () => {
   const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading, unreadMessages } = useChatStore();

@@ -90,7 +90,7 @@ const ChatContainer = () => {
                   />
                 )}
                 <p className="message-text"> {message.text} </p>
-                <time className="timestamp">
+                <time className={ message.image ? "timestapimg" :"timestamp"}>
                   {formatMessageTime(message.createdAt || message.createdat)}
                 </time>
               </div>

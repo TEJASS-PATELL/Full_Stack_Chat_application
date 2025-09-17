@@ -10,7 +10,7 @@ const SidebarSkeleton = () => {
             <div className="sidebar-toggle">
                 <div className="toggle-btn chat active">
                     <img src="person.png" className="sidebar-icon" alt="Contact" />
-                    <span className="sidebar-btn-text">Contact</span>
+                    <span className="sidebar-btn-text">Contact's</span>
                 </div>
             </div>
         </div>

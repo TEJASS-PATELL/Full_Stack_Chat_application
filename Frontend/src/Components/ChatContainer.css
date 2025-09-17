@@ -32,7 +32,10 @@
   padding: 12px 16px;
   border-radius: 16px;
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.5;   
+  display: flex;
+  align-items: flex-start; 
+  margin-bottom: 10px;
   word-wrap: break-word;
 }
 
@@ -72,6 +75,8 @@
 
 .message-bubble {
   padding: 12px 54px 12px 20px;
+  word-wrap: break-word; 
+  word-break: break-all;
   border-radius: 18px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   max-width: 100%;
@@ -104,7 +109,11 @@
   border: 1px solid #000000;
 }
 
-.timestamp {
+.timestapimg{
+  color: #000000;
+}
+
+.timestamp ,.timestapimg{
   position: absolute;
   bottom: 6px;
   right: 10px;
@@ -120,6 +129,14 @@
 .message-incoming .timestamp {
   color: #000000;
 }
+
+.message-text {
+    word-wrap: break-word;
+    word-break: break-all;
+    margin: 0;
+    padding: 0;
+}
+
 
 .message-image {
   width: 100%;
