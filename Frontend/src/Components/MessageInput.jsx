@@ -14,7 +14,7 @@ const MessageInput = () => {
   const fileInputRef = useRef(null);
 
   const { authUser, socket } = useAuthStore();
-  const { sendMessage, selectedUser } = useChatStore();
+  const { sendMessage, selectedUser} = useChatStore();
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];

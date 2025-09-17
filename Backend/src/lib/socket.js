@@ -19,13 +19,10 @@ const io = new Server(server, {
 
 const userSocketMap = {};
 
-const getReceiverSocketId = (userId) => userSocketMap[userId];
-
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
   const userId = socket.handshake.query.userId;
-
   if (userId) {
     userSocketMap[userId] = socket.id;
 
@@ -44,7 +41,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("sendMessage", async ({ fromUserId, toUserId, message }) => {
+  socket.on("sendMessage", async ({ fromUserId, toUserId, message, tempId }) => {
     try {
       const result = await pool.query(
         "INSERT INTO messages(sender_id, receiver_id, message) VALUES($1, $2, $3) RETURNING *",
@@ -52,19 +49,32 @@ io.on("connection", (socket) => {
       );
       const savedMessage = result.rows[0];
 
+      const savedMessageNormalized = {
+        id: savedMessage.id,
+        text: savedMessage.message,
+        senderId: savedMessage.sender_id,
+        receiverId: savedMessage.receiver_id,
+        createdAt: savedMessage.created_at,
+      };
+
       const receiverSocketId = userSocketMap[toUserId];
       if (receiverSocketId) {
-        io.to(receiverSocketId).emit("receiveMessage", savedMessage);
+        io.to(receiverSocketId).emit("receiveMessage", savedMessageNormalized);
       }
+
+      io.to(socket.id).emit("messageSent", { ...savedMessageNormalized, tempId });
     } catch (err) {
       console.error("DB error (sendMessage):", err.stack);
+      io.to(socket.id).emit("messageFailed", { tempId });
     }
   });
 
   socket.on("disconnect", async () => {
     console.log("Disconnected:", socket.id);
 
-    const disconnectedUserId = Object.keys(userSocketMap).find((key) => userSocketMap[key] === socket.id);
+    const disconnectedUserId = Object.keys(userSocketMap).find(
+      (key) => userSocketMap[key] === socket.id
+    );
 
     if (disconnectedUserId) {
       delete userSocketMap[disconnectedUserId];
@@ -83,4 +93,4 @@ io.on("connection", (socket) => {
   });
 });
 
-module.exports = { app, server, io, getReceiverSocketId };
+module.exports = { app, server, io };

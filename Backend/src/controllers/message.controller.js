@@ -62,17 +62,26 @@ const sendMessage = async (req, res) => {
 
     const newMessage = result.rows[0];
 
+    const normalizedMessage = {
+      id: newMessage.id,
+      text: newMessage.text,
+      senderId: newMessage.senderid,
+      receiverId: newMessage.receiverid,
+      image: newMessage.image,
+      createdAt: newMessage.createdat,
+    };
+
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit("receiveMessage", newMessage);
+      io.to(receiverSocketId).emit("receiveMessage", normalizedMessage);
     }
 
     const senderSocketId = getReceiverSocketId(senderId);
     if (senderSocketId) {
-      io.to(senderSocketId).emit("receiveMessage", { ...newMessage, tempId });
+      io.to(senderSocketId).emit("messageSent", { ...normalizedMessage, tempId });
     }
 
-    res.status(201).json(newMessage);
+    res.status(201).json(normalizedMessage);
   } catch (error) {
     console.error("Error in sendMessage controller:", error.stack);
     res.status(500).json({ error: "Internal server error" });
