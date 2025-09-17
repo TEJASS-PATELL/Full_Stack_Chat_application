@@ -66,8 +66,8 @@ const ChatContainer = () => {
           <div
             key={message.tempId || message.id}
             className={`message ${message.senderId === authUser.id
-                ? "message-incoming"
-                : "message-outgoing"
+              ? "message-incoming"
+              : "message-outgoing"
               }`}>
             <div className="avatar-wrapperr">
               <img
@@ -81,7 +81,7 @@ const ChatContainer = () => {
               />
             </div>
             <div className="message-contentt">
-              <div className="message-bubble">
+              <div className={message.image ? "message-bubble-image" : "message-bubble"}>
                 {message.image && (
                   <img
                     src={message.image}
@@ -89,17 +89,7 @@ const ChatContainer = () => {
                     className="message-image"
                   />
                 )}
-                {message.text && (
-                  <p
-                    className="message-text"
-                    dangerouslySetInnerHTML={{
-                      __html: message.text.replace(
-                        /\[(.*?)\]\((.*?)\)/g,
-                        '<a href="$2" target="_blank" class="message-link">$1</a>'
-                      ),
-                    }}
-                  />
-                )}
+                <p className="message-text"> {message.text} </p>
                 <time className="timestamp">
                   {formatMessageTime(message.createdAt || message.createdat)}
                 </time>

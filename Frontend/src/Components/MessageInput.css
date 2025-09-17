@@ -60,8 +60,8 @@
 }
 
 .preview-image {
-  max-height: 100px;
-  max-width: 100px;
+  max-height: 300px;
+  max-width: 300px;
   border-radius: 12px;
   object-fit: cover;
   border: 1px solid #ddd;
@@ -112,6 +112,11 @@
     gap: 6px;
   }
 
+    .preview-image {
+  max-height: 100px;
+  max-width: 100px;
+}
+
   .message-input-field {
     padding: 10px 12px;
     font-size: 13px;
@@ -128,6 +133,12 @@
 }
 
 @media (max-width: 480px) {
+
+  .preview-image {
+  max-height: 100px;
+  max-width: 100px;
+}
+
   .message-input {
     padding: 10px;
   }

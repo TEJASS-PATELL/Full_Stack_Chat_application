@@ -80,17 +80,6 @@ export const useChatStore = create(
         }
       },
 
-      replaceTempMessage: (confirmedMsg, tempId) =>
-        set((state) => {
-          const updated = state.messages.map((m) =>
-            m.id === tempId ? { ...confirmedMsg } : m
-          );
-          if (!updated.some((m) => m.id === confirmedMsg.id)) {
-            updated.push(confirmedMsg);
-          }
-          return { messages: updated };
-        }),
-
       addMessage: (message) =>
         set((state) => {
           if (state.messages.some((m) => m.id === message.id)) return state;
