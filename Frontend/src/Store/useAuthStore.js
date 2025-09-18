@@ -38,7 +38,7 @@ export const useAuthStore = create((set, get) => ({
       });
       set({ authUser: res.data });
       toast.success("Account created successfully");
-      get().connectSocket(res.data.id); 
+      get().connectSocket(res.data.id);
     } catch (error) {
       toast.error(error.response?.data?.message || "Signup failed");
     } finally {
@@ -65,7 +65,7 @@ export const useAuthStore = create((set, get) => ({
   logout: async () => {
     try {
       await axiosInstance.post("/auth/logout", {}, { withCredentials: true });
-      get().disconnectSocket(); 
+      get().disconnectSocket();
       set({ authUser: null, onlineUsers: [] });
       toast.success("Logged out successfully");
     } catch (error) {
@@ -73,9 +73,41 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+  updateProfile: async (data) => {
+    set({ isUpdatingProfile: true });
+    try {
+      const res = await axiosInstance.put("/auth/update-profile", data, {
+        withCredentials: true,
+      });
+      set({ authUser: res.data });
+      toast.success("Profile updated successfully");
+      return res.data;
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Profile update failed");
+      throw error;
+    } finally {
+      set({ isUpdatingProfile: false });
+    }
+  },
+
+  deleteAccount: async () => {
+    set({ isDeletingAccount: true });
+    try {
+      await axiosInstance.delete("/auth/delete-account", {
+        withCredentials: true,
+      });
+      set({ authUser: null });
+      get().disconnectSocket();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Account deletion failed");
+    } finally {
+      set({ isDeletingAccount: false });
+    }
+  },
+
   connectSocket: (userId) => {
     const { socket } = get();
-    if (!userId || socket) return; 
+    if (!userId || socket) return;
 
     console.log("Connecting to socket with userId:", userId);
 
