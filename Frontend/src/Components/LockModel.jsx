@@ -1,12 +1,17 @@
-const LockModal = ({
-  setShowLockModal,
-  pinInput,
-  setPinInput,
-  inputRefs,
-  handlePinSubmit,
-}) => {
+import { useState, useRef } from "react";
+import { useChatStore } from "../Store/useChatStore";
+import { useChatLockStore } from "../Store/useChatLockStore";
+import toast from "react-hot-toast";
+
+const LockModal = ({ setShowLockModal, currentLockUserId }) => {
+  const { users, setSelectedUser } = useChatStore();
+  const { lockChat, unlockChat, isUserLocked } = useChatLockStore();
+
+  const [pinInput, setPinInput] = useState(Array(6).fill(""));
+  const inputRefs = useRef([]);
+
   const handleChange = (e, index) => {
-    const value = e.target.value.replace(/[^0-9]/g, ""); 
+    const value = e.target.value.replace(/[^0-9]/g, "");
     if (!value) return;
 
     const newPin = [...pinInput];
@@ -19,16 +24,42 @@ const LockModal = ({
   };
 
   const handleBackspace = (e, index) => {
-    if (e.key === "Backspace" && !pinInput[index] && index > 0) {
+    if (e.key === "Backspace") {
       const newPin = [...pinInput];
-      newPin[index - 1] = "";
-      setPinInput(newPin);
-      inputRefs.current[index - 1].focus();
+
+      if (pinInput[index]) {
+        newPin[index] = "";
+        setPinInput(newPin);
+      } else if (index > 0) {
+        newPin[index - 1] = "";
+        setPinInput(newPin);
+        inputRefs.current[index - 1].focus();
+      }
     }
   };
 
-  const handleSubmitClick = async () => {
-    await handlePinSubmit();
+  const handlePinSubmit = async () => {
+    const pin = pinInput.join("");
+
+    if (pin.length !== 6 || !currentLockUserId) {
+      toast.error("Please enter a valid 6-digit PIN");
+      return;
+    }
+
+    try {
+      if (isUserLocked(currentLockUserId)) {
+        await unlockChat(currentLockUserId, pin);
+        if (!isUserLocked(currentLockUserId)) {
+          const unlockedUser = users.find((u) => u.id === currentLockUserId);
+          if (unlockedUser) setSelectedUser(unlockedUser);
+        }
+      } else {
+        await lockChat(currentLockUserId, pin);
+      }
+    } finally {
+      setShowLockModal(false);
+      setPinInput(Array(6).fill(""));
+    }
   };
 
   return (
@@ -54,7 +85,7 @@ const LockModal = ({
         </div>
 
         <div className="modal-actions">
-          <button onClick={handleSubmitClick}>Submit</button>
+          <button onClick={handlePinSubmit}>Submit</button>
           <button className="cancel-btn" onClick={() => setShowLockModal(false)}>
             Cancel
           </button>

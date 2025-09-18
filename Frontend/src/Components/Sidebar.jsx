@@ -6,20 +6,16 @@ import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import SidebarHeader from "./SidebarHeader";
 import SidebarList from "./SidebarList";
 import LockModal from "./LockModel";
-import { FaBars } from "react-icons/fa";
-import toast from "react-hot-toast";
 import "./Sidebar.css";
+import { useUIStore } from "../Store/useUIStore";
 
 const Sidebar = () => {
   const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } = useChatStore();
   const { onlineUsers } = useAuthStore();
-  const { fetchLockedChats, lockChat, unlockChat, isUserLocked } = useChatLockStore();
+  const { fetchLockedChats, isUserLocked } = useChatLockStore();
   const [showLockModal, setShowLockModal] = useState(false);
   const [currentLockUserId, setCurrentLockUserId] = useState(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [pinInput, setPinInput] = useState(Array(6).fill(""));
-  const inputRefs = useRef([]);
-
+  const { isSidebarOpen, toggleSidebar, closeSidebar } = useUIStore();
   const clickTimerRef = useRef(null);
 
   useEffect(() => {
@@ -34,7 +30,6 @@ const Sidebar = () => {
     e.stopPropagation();
     setCurrentLockUserId(userId);
     setShowLockModal(true);
-    setPinInput(Array(6).fill(""));
   };
 
   const handleUserClick = (user) => {
@@ -43,6 +38,7 @@ const Sidebar = () => {
     clickTimerRef.current = setTimeout(() => {
       if (!isUserLocked(user.id)) {
         setSelectedUser(user);
+        closeSidebar();
       } else {
         setCurrentLockUserId(user.id);
         setShowLockModal(true);
@@ -60,41 +56,12 @@ const Sidebar = () => {
     handleLockClick(e, userId);
   };
 
-  const handlePinSubmit = async () => {
-    const pin = pinInput.join("");
-
-    if (pin.length !== 6 || !currentLockUserId) {
-      toast.error("Please enter a valid 6-digit PIN");
-      return;
-    }
-
-    try {
-      if (isUserLocked(currentLockUserId)) {
-        await unlockChat(currentLockUserId, pin);
-        if (!isUserLocked(currentLockUserId)) {
-          const unlockedUser = users.find((u) => u.id === currentLockUserId);
-          if (unlockedUser) setSelectedUser(unlockedUser);
-        }
-      } else {
-        await lockChat(currentLockUserId, pin);
-      }
-    } finally {
-      setShowLockModal(false);
-      setPinInput(Array(6).fill(""));
-      setCurrentLockUserId(null);
-    }
-  };
-
   if (isUsersLoading) return <SidebarSkeleton />;
 
   return (
     <>
-      <button className="hamburger-btn" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-        <FaBars />
-      </button>
-
       <div className={`sidebarr ${isSidebarOpen ? "open" : ""}`}>
-        <SidebarHeader/>
+        <SidebarHeader />
         <SidebarList
           users={users}
           onlineUsers={onlineUsers}
@@ -102,17 +69,13 @@ const Sidebar = () => {
           handleUserClick={handleUserClick}
           handleUserDoubleClick={handleUserDoubleClick}
           isUserLocked={isUserLocked}
-          setIsSidebarOpen={setIsSidebarOpen}
         />
       </div>
 
       {showLockModal && (
         <LockModal
           setShowLockModal={setShowLockModal}
-          pinInput={pinInput}
-          setPinInput={setPinInput}
-          inputRefs={inputRefs}
-          handlePinSubmit={handlePinSubmit}
+          currentLockUserId={currentLockUserId}
         />
       )}
     </>

@@ -96,6 +96,10 @@
   justify-content: center;
 }
 
+.nav-btn.toggle{
+  visibility: hidden;
+}
+
 .nav-btn:hover {
   background-color: rgba(0, 0, 0, 0.07);
 }
@@ -138,6 +142,10 @@
   .btn-icon {
     width: 18px;
     height: 18px;
+  }
+
+  .nav-btn.toggle{
+    visibility: visible;
   }
 
   .chatbot-continerrr {

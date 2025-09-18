@@ -1,6 +1,6 @@
 .sidebar {
-  width: 525px;              /* Desktop default */
-  max-width: 100%;           /* Prevent overflow */
+  width: 525px;              
+  max-width: 100%;          
   background: #ffffff;
   border-right: 1px solid #e5e7eb;
   display: flex;
@@ -16,9 +16,7 @@
 
 @media (max-width: 768px) {
   .sidebar {
-    width: 100%;           
-    border-right: none;
-    border-bottom: 1px solid #e5e7eb;
+    visibility: hidden;
   }
 }
 

@@ -1,27 +1,24 @@
-import { Bot } from "lucide-react";
-import "./NoChatSelected.css"; 
+import { MessagesSquare } from "lucide-react";
+import "./NoChatSelected.css";
+import { useUIStore } from "../Store/useUIStore";
 
 const NoChatSelected = () => {
+  const { toggleSidebar } = useUIStore();
   return (
     <div className="no-chat-container">
       <div className="no-chat-card">
         <div className="icon-container">
           <div className="icon-wrapper">
-             <Bot className="iconn" size={68} strokeWidth={1.5} />
+            <MessagesSquare
+              className="iconn"
+              strokeWidth={1.2}
+              onClick={toggleSidebar}
+            />
           </div>
         </div>
 
         <div className="text-container">
-          <h2 className="welcome-text">Start chatting now !</h2>
-          <p className="instruction-text">
-            Choose a chat from the list to send Messages instantly.
-          </p>
-          <p className="instruction-text">
-            You can share text, images with your contacts.
-          </p>
-          <p className="instruction-text">
-            Stay connected and never miss a Message.
-          </p>
+          <h2 className="welcome-text"> " Welcome to <strong>ChatLock</strong> Let’s Chat, Bro! "</h2>
         </div>
       </div>
     </div>

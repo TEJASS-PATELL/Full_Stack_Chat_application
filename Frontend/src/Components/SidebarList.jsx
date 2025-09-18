@@ -32,8 +32,8 @@ const SidebarList = ({
             key={user.id}
             onClick={() => handleUserClick(user)}
             onDoubleClick={(e) => handleUserDoubleClick(e, user.id)}
-            className={`sidebar-user ${isSelected ? "selected" : ""}`}
-          > 
+            className={`sidebar-user ${isSelected ? "selected" : ""}`}> 
+            
             <div className="sidebar-user-container">
               <div className="sidebar-space">
                 <div className="sidebar-avatar" style={{ marginRight: 10, position: "relative" }}>

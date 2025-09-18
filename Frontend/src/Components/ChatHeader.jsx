@@ -3,11 +3,14 @@ import { X, LogOut, User } from "lucide-react";
 import { useAuthStore } from "../Store/useAuthStore";
 import { useChatStore } from "../Store/useChatStore";
 import { Link, useNavigate } from "react-router-dom";
+import { MdMenuOpen } from "react-icons/md";
+import { useUIStore } from "../Store/useUIStore";
 
 const ChatHeader = () => {
   const { selectedUser, setSelectedUser, typingUserId } = useChatStore();
   const { authUser, onlineUsers, logout } = useAuthStore();
   const navigate = useNavigate();
+  const { toggleSidebar } = useUIStore(); 
   const isOnline = selectedUser && onlineUsers.includes(String(selectedUser.id));
   const isTyping = typingUserId === selectedUser?.id;
 
@@ -35,16 +38,19 @@ const ChatHeader = () => {
             className={`status-indicator ${isOnline ? "online" : "offline"}`}
           ></span>
         </div>
-        
+
         <div className="user-details">
           <h3 className="user-name">{selectedUser.fullname}</h3>
-          <p className={`user-status ${ isTyping ? "typing" : isOnline ? "online" : "offline" }`}>
-            {isTyping ? "Typing..." : isOnline ? "Online" :"Offline"}
+          <p className={`user-status ${isTyping ? "typing" : isOnline ? "online" : "offline"}`}>
+            {isTyping ? "Typing..." : isOnline ? "Online" : "Offline"}
           </p>
         </div>
       </div>
 
       <div className="chat-controls">
+        <button onClick={toggleSidebar} className="nav-btn toggle">
+           <MdMenuOpen size={20} />
+        </button>
         {authUser && (
           <>
             <Link to="/profile" className="nav-btn">

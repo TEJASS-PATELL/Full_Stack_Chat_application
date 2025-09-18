@@ -10,29 +10,26 @@
 }
 
 .no-chat-card {
-  max-width: 45rem;
-  width: 100%;
-  background-color: rgb(0, 0, 0);
+  background-color: rgb(255, 255, 255);
   border-radius: 30px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  padding: 2.5rem;
-  text-align: center;
+  color: black;
+  margin-bottom: 150px;
 }
 
 .icon-container {
   display: flex;
   justify-content: center;
-  margin-bottom: 2rem;
 }
 
 .icon-wrapper {
-  animation: bounce 1.5s infinite;
+  animation: bounce 4s infinite ease-in-out;
 }
 
 .iconn {
-  width: clamp(3rem, 10vw, 6rem);   
-  height: clamp(3rem, 10vw, 6rem);
-  color: #ffffff;
+  width: 100px;
+  cursor: pointer;
+  height: 100px;
+  color: #000000;
 }
 
 .text-container {
@@ -42,21 +39,24 @@
 }
 
 .welcome-text {
-  font-size: clamp(1.5rem, 5vw, 2.25rem); 
+  font-size: 35px;
   font-weight: bold;
-  color: #ffffff;
+  color: #000000;
 }
 
-.instruction-text {
-  letter-spacing: 1px;
-  font-size: clamp(0.9rem, 3vw, 1.12rem); 
-  color: #ffffff;
+.welcome-text strong {
+  font-style: italic;
+  font-weight: 500;
+  color: red;
 }
 
 @keyframes bounce {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-10px);
   }
@@ -69,6 +69,8 @@
   }
 
   .icon-container {
+    height: 80px;
+    width: 80px;
     margin-bottom: 1.5rem;
   }
 
@@ -78,8 +80,12 @@
 }
 
 @media (min-width: 601px) and (max-width: 900px) {
-  .no-chat-card {
-    padding: 2rem;
-    border-radius: 25px;
+  .welcome-text {
+    font-size: 25px;
+  }
+
+  .iconn {
+    height: 80px;
+    width: 80px;
   }
 }
