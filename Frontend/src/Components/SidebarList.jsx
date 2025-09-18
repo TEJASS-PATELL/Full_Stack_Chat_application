@@ -1,24 +1,9 @@
-const formatLastSeen = (lastSeen) => {
-  const last = new Date(lastSeen);
-  const now = new Date();
-  const diffMs = now - last;
-  const diffMin = Math.floor(diffMs / 60000);
-  const diffHr = Math.floor(diffMin / 60);
-  const diffDay = Math.floor(diffHr / 24);
+import { useAuthStore } from "../Store/useAuthStore";
+import { formatLastSeen } from "../utils/formatLastSeen";
 
-  if (diffMin < 1) return "just now";
-  if (diffMin < 60) return `${diffMin} minute${diffMin > 1 ? "s" : ""} ago`;
-  if (diffHr < 24) return `${diffHr} hour${diffHr > 1 ? "s" : ""} ago`;
-  return `${diffDay} day${diffDay > 1 ? "s" : ""} ago`;
-};
+const SidebarList = ({ users, selectedUser, handleUserClick, handleUserDoubleClick }) => {
+  const { onlineUsers } = useAuthStore();
 
-const SidebarList = ({
-  users,
-  onlineUsers,
-  selectedUser,
-  handleUserClick,
-  handleUserDoubleClick,
-}) => {
   return (
     <div className="sidebar-list">
       {users.length === 0 && <div className="sidebar-no-users">No users found</div>}
@@ -32,8 +17,8 @@ const SidebarList = ({
             key={user.id}
             onClick={() => handleUserClick(user)}
             onDoubleClick={(e) => handleUserDoubleClick(e, user.id)}
-            className={`sidebar-user ${isSelected ? "selected" : ""}`}> 
-            
+            className={`sidebar-user ${isSelected ? "selected" : ""}`}
+          >
             <div className="sidebar-user-container">
               <div className="sidebar-space">
                 <div className="sidebar-avatar" style={{ marginRight: 10, position: "relative" }}>
@@ -43,10 +28,15 @@ const SidebarList = ({
 
                 <div style={{ flex: 1 }}>
                   <span className="sidebar-username">{user.fullname || "User"}</span>
-                    <div className="sidebar-lastseen-only">
-                      {isOnline ? <span className="status-online">Online</span> : <span className="status-lastseen">
-                          Last seen {formatLastSeen(user.lastSeen)} </span>}
-                    </div>
+                  <div className="sidebar-lastseen-only">
+                    {isOnline ? (
+                      <span className="status-online">Online</span>
+                    ) : (
+                      <span className="status-lastseen">
+                        Last seen {formatLastSeen(user.lastSeen)}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

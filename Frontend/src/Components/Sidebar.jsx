@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { useChatStore } from "../Store/useChatStore";
-import { useAuthStore } from "../Store/useAuthStore";
 import { useChatLockStore } from "../Store/useChatLockStore";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import SidebarHeader from "./SidebarHeader";
@@ -11,11 +10,10 @@ import { useUIStore } from "../Store/useUIStore";
 
 const Sidebar = () => {
   const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } = useChatStore();
-  const { onlineUsers } = useAuthStore();
   const { fetchLockedChats, isUserLocked } = useChatLockStore();
   const [showLockModal, setShowLockModal] = useState(false);
   const [currentLockUserId, setCurrentLockUserId] = useState(null);
-  const { isSidebarOpen, toggleSidebar, closeSidebar } = useUIStore();
+  const { isSidebarOpen, closeSidebar } = useUIStore();
   const clickTimerRef = useRef(null);
 
   useEffect(() => {
@@ -63,14 +61,12 @@ const Sidebar = () => {
         <SidebarHeader />
         <SidebarList
           users={users}
-          onlineUsers={onlineUsers}
           selectedUser={selectedUser}
           handleUserClick={handleUserClick}
           handleUserDoubleClick={handleUserDoubleClick}
           isUserLocked={isUserLocked}
         />
       </div>
-
       {showLockModal && (
         <LockModal
           setShowLockModal={setShowLockModal}
