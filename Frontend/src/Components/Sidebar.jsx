@@ -43,7 +43,6 @@ const Sidebar = () => {
         setCurrentLockUserId(user.id);
         setShowLockModal(true);
       }
-      setIsSidebarOpen(false);
       clickTimerRef.current = null;
     }, 200);
   };
