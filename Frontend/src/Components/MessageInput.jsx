@@ -52,10 +52,7 @@ const MessageInput = () => {
     if (fileInputRef.current) fileInputRef.current.value = "";
 
     try {
-      await sendMessage({
-        text: tempMsg.text,
-        image: tempMsg.image,
-      });
+      await sendMessage({ text: tempMsg.text, image: tempMsg.image });
     } catch {
       toast.error("Failed to send message");
     }

@@ -38,11 +38,7 @@ const ChatHeader = () => {
         
         <div className="user-details">
           <h3 className="user-name">{selectedUser.fullname}</h3>
-          <p
-            className={`user-status ${
-              isTyping ? "typing" : isOnline ? "online" : "offline"
-            }`}
-          >
+          <p className={`user-status ${ isTyping ? "typing" : isOnline ? "online" : "offline" }`}>
             {isTyping ? "Typing..." : isOnline ? "Online" :"Offline"}
           </p>
         </div>

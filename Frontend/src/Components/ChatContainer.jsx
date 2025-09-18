@@ -44,11 +44,7 @@ const ChatContainer = () => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const listData = useMemo(() => ({ messages, authUser, selectedUser }), [
-    messages,
-    authUser,
-    selectedUser,
-  ]);
+  const listData = useMemo(() => ({ messages, authUser, selectedUser }), [ messages, authUser, selectedUser ]);
 
   if (isMessagesLoading) {
     return (
@@ -65,11 +61,7 @@ const ChatContainer = () => {
       <ChatHeader />
       <div className="messages-wrapper">
         {messages.map((msg, index) => (
-          <MessageContainer
-            key={msg.id || index + 1}
-            index={index}
-            data={listData}
-          />
+          <MessageContainer key={msg.id || index + 1} index={index} data={listData} />
         ))}
         <div ref={messageEndRef} />
       </div>

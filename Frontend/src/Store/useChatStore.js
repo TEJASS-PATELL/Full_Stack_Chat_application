@@ -1,20 +1,19 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { axiosInstance } from "../lib/axios";
 import { useAuthStore } from "./useAuthStore";
+import { axiosInstance } from "../lib/axios";
+import toast from "react-hot-toast";
 
 let messageListenerRef = null;
 
 export const useChatStore = create(
-  persist(
     (set, get) => ({
       messages: [],
       users: [],
       selectedUser: null,
       typingUserId: null,
-      unreadMessages: {},
       isUsersLoading: false,
       isMessagesLoading: false,
+
       setTypingUserId: (id) => set({ typingUserId: id }),
 
       getUsers: async () => {
@@ -49,7 +48,7 @@ export const useChatStore = create(
         }
       },
 
-      sendMessage: async (messageData) => {
+      sendMessage: async ({ text, image }) => {
         const { selectedUser, messages } = get();
         const authUser = useAuthStore.getState().authUser;
         if (!selectedUser || !authUser) return;
@@ -57,7 +56,8 @@ export const useChatStore = create(
         const tempId = Date.now();
         const tempMsg = {
           id: tempId,
-          text: messageData.text,
+          text,
+          image,
           senderId: authUser.id,
           receiverId: selectedUser.id,
           createdAt: new Date().toISOString(),
@@ -69,7 +69,7 @@ export const useChatStore = create(
         try {
           const { data: savedMsg } = await axiosInstance.post(
             `/messages/send/${selectedUser.id}`,
-            { ...messageData, tempId }
+            { text, image, tempId }
           );
 
           set((state) => ({
@@ -77,16 +77,13 @@ export const useChatStore = create(
               m.id === tempId ? { ...savedMsg, senderId: authUser.id } : m
             ),
           }));
-
-          return savedMsg;
         } catch (err) {
-          console.error("Send message error:", err);
+          toast.error("Message failed to send");
           set((state) => ({
             messages: state.messages.map((m) =>
               m.id === tempId ? { ...m, failed: true } : m
             ),
           }));
-          throw err;
         }
       },
 
@@ -103,8 +100,9 @@ export const useChatStore = create(
           };
 
           const authUser = useAuthStore.getState().authUser;
+          if (!authUser) return;
 
-          if (msg.senderId === authUser?.id) {
+          if (msg.senderId === authUser.id) {
             set((state) => ({
               messages: state.messages.map((m) =>
                 m.id === msg.tempId ? { ...msg, pending: false } : m
@@ -130,22 +128,6 @@ export const useChatStore = create(
         }
       },
 
-      setSelectedUser: (selectedUser) =>
-        set((state) => {
-          if (!selectedUser) return { selectedUser: null };
-          const updatedUnread = { ...state.unreadMessages };
-          delete updatedUnread[selectedUser.id];
-          return { selectedUser, unreadMessages: updatedUnread };
-      }),
-
-      addUnreadMessage: (userId) =>
-        set((state) => ({
-          unreadMessages: { ...state.unreadMessages, [userId]: true },
-      })),
+      setSelectedUser: (selectedUser) => set({ selectedUser }),
     }),
-    {
-      name: "chat-store",
-      partialize: (state) => ({ unreadMessages: state.unreadMessages }),
-    }
-  )
 );

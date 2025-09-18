@@ -6,12 +6,12 @@ export const useChatLockStore = create((set, get) => ({
   lockedUserIds: new Set(),
   isLocking: false,
   isFetchingLocks: false,
-
+  
+  //* Important for maintain lock after reload
   fetchLockedChats: async (users) => {
     set({ isFetchingLocks: true });
     try {
-      const lockedIds = new Set(
-        (
+      const lockedIds = new Set((
           await Promise.all(
             users.map(async (user) => {
               const res = await axiosInstance.get(`/chat-lock/status/${user.id}`, {
@@ -29,7 +29,8 @@ export const useChatLockStore = create((set, get) => ({
       set({ isFetchingLocks: false });
     }
   },
-
+  //*--------------
+  
   lockChat: async (userId, pin) => {
     set({ isLocking: true });
     try {
