@@ -40,8 +40,7 @@ smooth messaging without any unwanted clutter. 🚀
 
 ## 🌐 Live Demo  
 
-🔗 **Live App:** [ChatLock](https://full-stack-chat-application-seven.vercel.app)  
-💻 **Source Code:** [GitHub Repository](https://github.com/TEJASS-PATELL/Full_Stack_Chat_application.git)  
+🔗 **Live App:** [ChatLock](https://full-stack-chat-application-seven.vercel.app)   
 
 ---
 
