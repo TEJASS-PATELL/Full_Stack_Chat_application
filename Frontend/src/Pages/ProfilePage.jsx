@@ -5,20 +5,14 @@ import toast from "react-hot-toast";
 import "../styles/ProfilePage.css";
 
 const ProfilePage = () => {
-  const {
-    authUser,
-    isUpdatingProfile,
-    updateProfile,
-    deleteAccount,
-    isDeletingAccount,
-  } = useAuthStore();
+  const { authUser, isUpdatingProfile, updateProfile, deleteAccount, isDeletingAccount } = useAuthStore();
 
   const [selectedImg, setSelectedImg] = useState(null);
 
   useEffect(() => {
     setSelectedImg(authUser?.profilepic || null);
   }, [authUser]);
-
+  
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
