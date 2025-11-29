@@ -96,6 +96,30 @@
   word-wrap: break-word;
 }
 
+.message-bubble,
+.message-bubble-image {
+  position: relative;
+}
+
+.delete-image {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: transparent;
+  border: none;
+  color: red;
+  border-radius: 50%;
+  padding: 4px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.message-bubble-image:hover .delete-image {
+  opacity: 1;
+}
+
+
 .message-outgoing .message-bubble {
   background: #000000;
   color: #ffffff;
@@ -170,6 +194,35 @@
   padding: 15px;
   background: #ffffff;
   border-top: 1px solid #f0f0f0;
+}
+
+.image-loading-spinner {
+  width: 120px;                 
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(255, 255, 255);
+  backdrop-filter: blur(6px);
+  border-radius: 10px;
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.image-loading-spinner svg {
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .user-status.typing {
