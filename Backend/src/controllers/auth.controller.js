@@ -185,15 +185,16 @@ const deleteAccount = async (req, res) => {
     const userId = req.user.id;
     if (!userId) return res.status(401).json({ message: "User ID is missing" });
 
-    const { rowCount } = await pool.query(
+    await pool.query(
       `DELETE FROM users WHERE id = $1`,
       [userId]
     );
 
-      res.clearCookie("jwt", {
+    res.clearCookie("jwt", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Lax",
+      sameSite: "none",
+      path: "/",
     });
 
     return res.status(200).json({ message: "Account deleted successfully" });
