@@ -33,24 +33,39 @@ const getMessages = async (req, res) => {
   try {
     const { id: userToChatId } = req.params;
     const myId = req.user.id;
+    const before = req.query.before;
 
-    const cacheKey = `messages_${myId}_${userToChatId}`;
-    const cachedMessages = cache.get(cacheKey);
+    const cacheKey = before ? `messages_${myId}_${userToChatId}_before_${before}` : `messages_${myId}_${userToChatId}_latest`;
 
-    if (cachedMessages) {
-      return res.status(200).json(cachedMessages);
+    const cached = cache.get(cacheKey);
+    if (cached) {
+      return res.status(200).json(cached);
     }
 
-    const { rows: messages } = await pool.query(
-      `SELECT id, senderid, receiverid, text, image, createdat FROM messages WHERE (senderid = $1 AND receiverid = $2) 
-          OR (senderid = $2 AND receiverid = $1) ORDER BY createdat DESC LIMIT 30`,
-      [myId, userToChatId]
-    );
+    let query = `
+      SELECT id, senderid, receiverid, text, image, createdat
+      FROM messages
+      WHERE
+        (senderid = $1 AND receiverid = $2)
+        OR
+        (senderid = $2 AND receiverid = $1)
+    `;
 
-    cache.set(cacheKey, messages);
+    const params = [myId, userToChatId];
 
-    res.status(200).json(messages);
+    if (before) {
+      query += ` AND createdat < $3 `;
+      params.push(before);
+    }
 
+    query += ` ORDER BY createdat DESC LIMIT 30`;
+
+    const { rows } = await pool.query(query, params);
+    const finalMessages = rows.reverse();
+
+    cache.set(cacheKey, finalMessages);
+
+    res.status(200).json(finalMessages);
   } catch (error) {
     console.error(error.stack);
     res.status(500).json({ error: "Internal server error" });

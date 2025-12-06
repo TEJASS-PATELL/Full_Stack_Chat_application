@@ -29,7 +29,6 @@ export const useChatLockStore = create((set, get) => ({
       set({ isFetchingLocks: false });
     }
   },
-  //*--------------
   
   lockChat: async (userId, pin) => {
     set({ isLocking: true });
