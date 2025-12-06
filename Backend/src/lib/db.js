@@ -4,6 +4,7 @@ require("dotenv").config();
 const pool = new Pool({
   connectionString: process.env.INTERNAL_URL,
   ssl: { rejectUnauthorized: false },
+  max: 30,
 });
 
 (async () => {
