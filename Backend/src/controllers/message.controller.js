@@ -92,8 +92,6 @@ const sendMessage = async (req, res) => {
       createdAt: newMessage.createdat,
     };
 
-    console.log(senderId, receiverId);
-
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) io.to(receiverSocketId).emit("receiveMessage", normalizedMessage);
 
