@@ -1,14 +1,14 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
-const RECEIVER_ID = '3'; // must exist in your users table
+const RECEIVER_ID = '3'; 
 const BASE_URL = 'https://full-stack-chat-application-sb2f.onrender.com/api/messages';
-const TEST_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTc2NDQ0NjM0NywiZXhwIjoxNzY1MDUxMTQ3fQ.Q5G8Wln2um-as8LkN_EK-MgcVBWM2jEASagD9iG9Pek';
+const TEST_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsImlhdCI6MTc2NTA1MjI3MiwiZXhwIjoxNzY1NjU3MDcyfQ.nVhFxc5g1vpjYiIrcbTyDzYHzaXS1YBrpCpA0G04m80';
 
 export const options = {
     stages: [
-        { duration: '10s', target: 100 },  // 10 second mein 1 se 100 VUs tak jao
-        { duration: '20s', target: 100 },  // 20 second tak 100 VUs par maintain rakho
+        { duration: '10s', target: 100 },  
+        { duration: '20s', target: 100 },  
     ],
     thresholds: {
         http_req_duration: ['p(95)<500'],
@@ -24,7 +24,6 @@ export default function () {
         image: null,
     });
 
-    // ✅ Send cookie named 'jwt'
     const params = {
         headers: { 'Content-Type': 'application/json' },
         cookies: { jwt: TEST_TOKEN },
