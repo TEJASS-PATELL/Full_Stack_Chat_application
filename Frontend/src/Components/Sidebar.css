@@ -196,7 +196,11 @@
 .sidebar-no-users {
   text-align: center;
   padding: 2rem;
-  color: #6c757d; 
+  color: #000000; 
+}
+
+.sidebar-no-users p{
+  margin-bottom: 5px;
 }
 
 .sidebar-space {

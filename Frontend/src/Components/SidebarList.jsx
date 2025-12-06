@@ -6,19 +6,21 @@ const SidebarList = ({ users, selectedUser, handleUserClick, handleUserDoubleCli
 
   return (
     <div className="sidebar-list">
-      {users.length === 0 && <div className="sidebar-no-users">No users found</div>}
+      {users.length === 0 && <div className="sidebar-no-users">
+        <p>Looks like you're alone.</p>
+        <p>Invite someone to chat!</p>
+      </div>}
 
       {users.map((user) => {
         const isOnline = onlineUsers.includes(String(user.id));
         const isSelected = selectedUser?.id === user.id;
 
         return (
-          <div
+          <div 
             key={user.id}
             onClick={() => handleUserClick(user)}
             onDoubleClick={(e) => handleUserDoubleClick(e, user.id)}
-            className={`sidebar-user ${isSelected ? "selected" : ""}`}
-          >
+            className={`sidebar-user ${isSelected ? "selected" : ""}`}>
             <div className="sidebar-user-container">
               <div className="sidebar-space">
                 <div className="sidebar-avatar" style={{ marginRight: 10, position: "relative" }}>

@@ -1,32 +1,32 @@
 .profile-container {
-  max-width: 800px;
+  max-width: 900px;
   margin: 5rem auto;
   padding: 2rem;
-  border-radius: 16px;
   font-family: 'Segoe UI', sans-serif;
 }
 
 .profile-cardd {
   background: white;
   padding: 30px;
+  border: 1px solid rgb(204, 204, 204);
   border-radius: 20px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
   width: 100%;
 }
 
 .profile-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 2.15rem;
 }
 
 .profile-header h1 {
-  font-size: 2.25rem;
+  font-size: 2.45rem;
+  letter-spacing: 1px;
   color: #000000;
 }
 
 .profile-header p {
   color: #313131;
-  font-size: 1rem;
+  font-size: 1.15rem;
 }
 
 .avatar-upload {
@@ -38,13 +38,13 @@
 
 .avatar-wrapper {
   position: relative;
-  width: 130px;
-  height: 130px;
+  width: 140px;
+  height: 140px;
 }
 
 .avatar-img {
-  width: 130px;
-  height: 130px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid #e5e7eb;
@@ -70,15 +70,15 @@
 }
 
 .upload-text {
-  margin-top: 0.5rem;
+  margin-top: 1rem;
   color: #252525;
-  font-size: 1rem;
+  font-size: 1.15rem;
   text-align: center;
 }
 
 .profile-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr); 
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
@@ -150,9 +150,9 @@
 }
 
 .account-itemm {
-  display: grid;
-  grid-template-columns: 1fr auto;
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: 1rem;
   margin-top: 1.5rem;
 }
@@ -169,10 +169,6 @@
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(230, 0, 0, 0.3);
   transition: all 0.3s ease;
-}
-
-.delete_account:hover {
-  transform: translateY(-2px);
 }
 
 .account-value,

@@ -12,7 +12,7 @@ const ProfilePage = () => {
   useEffect(() => {
     setSelectedImg(authUser?.profilepic || null);
   }, [authUser]);
-  
+
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -24,7 +24,7 @@ const ProfilePage = () => {
       const base64Image = reader.result;
       try {
         const updatedUser = await updateProfile({ profilepic: base64Image });
-        setSelectedImg(updatedUser.profilepic); 
+        setSelectedImg(updatedUser.profilepic);
       } catch (error) {
         toast.error("Failed to update profile picture.");
       }
@@ -46,10 +46,10 @@ const ProfilePage = () => {
 
   const createdAt = authUser?.createdAt || authUser?.createdat;
   const formattedDate = createdAt ? new Intl.DateTimeFormat("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }).format(new Date(createdAt)) : "N/A";
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(createdAt)) : "N/A";
 
   return (
     <div className="profile-container">
@@ -105,9 +105,7 @@ const ProfilePage = () => {
             </div>
             <p>{authUser?.email || "N/A"}</p>
           </div>
-        </div>
 
-        <div className="account-itemm">
           <div className="info-cardd">
             <div className="info-header">
               <CalendarDays className="info-icon" />
@@ -115,13 +113,15 @@ const ProfilePage = () => {
             </div>
             <p className="p-icon">{formattedDate}</p>
           </div>
+        </div>
+
+        <div className="account-itemm">
 
           <div>
             <button
               onClick={handleDeleteAccount}
               disabled={isDeletingAccount}
-              className="delete_account"
-            >
+              className="delete_account">
               {isDeletingAccount ? "Deleting..." : "Delete Account"}
             </button>
           </div>

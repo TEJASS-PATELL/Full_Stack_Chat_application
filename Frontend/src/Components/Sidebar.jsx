@@ -59,19 +59,15 @@ const Sidebar = () => {
     <>
       <div className={`sidebarr ${isSidebarOpen ? "open" : ""}`}>
         <SidebarHeader />
-        <SidebarList
+        <SidebarList 
           users={users}
           selectedUser={selectedUser}
           handleUserClick={handleUserClick}
           handleUserDoubleClick={handleUserDoubleClick}
-          isUserLocked={isUserLocked}
-        />
+          isUserLocked={isUserLocked}/>
       </div>
       {showLockModal && (
-        <LockModal
-          setShowLockModal={setShowLockModal}
-          currentLockUserId={currentLockUserId}
-        />
+        <LockModal setShowLockModal={setShowLockModal} currentLockUserId={currentLockUserId} />
       )}
     </>
   );

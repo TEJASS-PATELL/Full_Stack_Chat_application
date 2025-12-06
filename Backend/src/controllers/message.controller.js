@@ -1,19 +1,28 @@
 const pool = require("../lib/db");
 const cloudinary = require("../lib/cloudinary");
 const { getReceiverSocketId, io } = require("../lib/socket");
+const cache = require("../lib/cache");
 
 const getUsersForSidebar = async (req, res) => {
   try {
     const loggedInUserId = req.user.id;
 
+    const cacheKey = `users_sidebar_${loggedInUserId}`;
+    const cachedUsers = cache.get(cacheKey);
+
+    if (cachedUsers) {
+      return res.status(200).json(cachedUsers);
+    }
+
     const { rows: filteredUsers } = await pool.query(
-      `SELECT id, fullname, email, profilepic, createdat, isonline AS "isOnline", lastseen AS "lastSeen"
-       FROM users 
-       WHERE id != $1`,
+      `SELECT id, fullname, email, profilepic, isonline AS "isOnline", lastseen AS "lastSeen" FROM users WHERE id != $1`,
       [loggedInUserId]
     );
 
+    cache.set(cacheKey, filteredUsers);
+
     res.status(200).json(filteredUsers);
+
   } catch (error) {
     console.error(error.stack);
     res.status(500).json({ error: "Internal server error" });
@@ -25,16 +34,23 @@ const getMessages = async (req, res) => {
     const { id: userToChatId } = req.params;
     const myId = req.user.id;
 
+    const cacheKey = `messages_${myId}_${userToChatId}`;
+    const cachedMessages = cache.get(cacheKey);
+
+    if (cachedMessages) {
+      return res.status(200).json(cachedMessages);
+    }
+
     const { rows: messages } = await pool.query(
-      `SELECT id, senderid, receiverid, text, image, createdat
-       FROM messages
-       WHERE (senderid = $1 AND receiverid = $2) 
-          OR (senderid = $2 AND receiverid = $1)
-       ORDER BY createdat ASC`,
+      `SELECT id, senderid, receiverid, text, image, createdat FROM messages WHERE (senderid = $1 AND receiverid = $2) 
+          OR (senderid = $2 AND receiverid = $1) ORDER BY createdat DESC LIMIT 30`,
       [myId, userToChatId]
     );
 
+    cache.set(cacheKey, messages);
+
     res.status(200).json(messages);
+
   } catch (error) {
     console.error(error.stack);
     res.status(500).json({ error: "Internal server error" });
@@ -66,6 +82,9 @@ const sendMessage = async (req, res) => {
 
     const newMessage = result.rows[0];
 
+    cache.del(`messages_${senderId}_${receiverId}`);
+    cache.del(`messages_${receiverId}_${senderId}`);
+
     const normalizedMessage = {
       id: newMessage.id,
       text: newMessage.text,
@@ -88,8 +107,4 @@ const sendMessage = async (req, res) => {
   }
 };
 
-module.exports = {
-  getUsersForSidebar,
-  getMessages,
-  sendMessage,
-};
+module.exports = { getUsersForSidebar, getMessages, sendMessage };

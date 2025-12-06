@@ -3,7 +3,7 @@ const cookieParser = require("cookie-parser");
 const authRoutes = require("./routers/auth.route");
 const messageRoutes = require("./routers/message.route");
 const chatLockRoutes = require("./routers/chatLock.route");
-const { looseLimiter } = require("./lib/limiter");
+const { looseLimiter } = require("./helper/limiter");
 const cors = require("cors");
 const helmet = require("helmet");
 require("dotenv").config();
