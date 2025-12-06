@@ -13,9 +13,8 @@ export const useChatScroll = (messages, selectedUser) => {
 
     const isNewUser = currentUserId !== prevUserId;
     const isNewMessage = currentLength > prevLength;
-    const isPaginationLoad = isNewMessage && messages[0].id !== messages[currentLength - 1].id;
 
-    if (isNewUser || (isNewMessage && !isPaginationLoad)) {
+    if (isNewUser || isNewMessage) {
       bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }
 

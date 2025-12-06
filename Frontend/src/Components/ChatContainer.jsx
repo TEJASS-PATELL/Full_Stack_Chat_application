@@ -9,8 +9,18 @@ import "./ChatContainer.css";
 import { useChatScroll } from "../hooks/useChatScroll";
 
 const ChatContainer = () => {
-  const { messages, getMessages, isMessagesLoading, selectedUser, subscribeToMessages, unsubscribeFromMessages,
-    setTypingUserId, loadMoreMessages, hasMoreMessages, isLoadingMore } = useChatStore();
+  const {
+    messages,
+    getMessages,
+    isMessagesLoading,
+    selectedUser,
+    subscribeToMessages,
+    unsubscribeFromMessages,
+    setTypingUserId,
+    loadMoreMessages,
+    hasMoreMessages,
+    isLoadingMore,
+  } = useChatStore();
 
   const { authUser, socket } = useAuthStore();
   const messageEndRef = useChatScroll(messages, selectedUser);
@@ -66,7 +76,10 @@ const ChatContainer = () => {
     }
   }, [messages, isLoadingMore]);
 
-  const listData = useMemo(() => ({ messages, authUser, selectedUser }), [messages, authUser, selectedUser]);
+  const listData = useMemo(
+    () => ({ messages, authUser, selectedUser }),
+    [messages, authUser, selectedUser]
+  );
 
   if (isMessagesLoading) {
     return (

@@ -35,17 +35,17 @@ const getMessages = async (req, res) => {
     const myId = req.user.id;
     const before = req.query.before;
 
-    const cacheKey = before ? `messages_${myId}_${userToChatId}_before_${before}` : `messages_${myId}_${userToChatId}_latest`;
+    const cacheKey = before
+      ? `messages_${myId}_${userToChatId}_before_${before}`
+      : `messages_${myId}_${userToChatId}_latest`;
 
     const cached = cache.get(cacheKey);
-    if (cached) {
-      return res.status(200).json(cached);
-    }
+    if (cached) return res.status(200).json(cached);
 
     let query = `
       SELECT id, senderid, receiverid, text, image, createdat
       FROM messages
-      WHERE
+      WHERE 
         (senderid = $1 AND receiverid = $2)
         OR
         (senderid = $2 AND receiverid = $1)
@@ -61,13 +61,14 @@ const getMessages = async (req, res) => {
     query += ` ORDER BY createdat DESC LIMIT 30`;
 
     const { rows } = await pool.query(query, params);
-    const finalMessages = rows.reverse();
 
-    cache.set(cacheKey, finalMessages);
+    const messagesASC = rows.reverse();
 
-    res.status(200).json(finalMessages);
+    cache.set(cacheKey, messagesASC);
+
+    res.status(200).json(messagesASC);
   } catch (error) {
-    console.error(error.stack);
+    console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
@@ -97,8 +98,8 @@ const sendMessage = async (req, res) => {
 
     const newMessage = result.rows[0];
 
-    cache.del(`messages_${senderId}_${receiverId}`);
-    cache.del(`messages_${receiverId}_${senderId}`);
+    cache.delStartWith(`messages_${senderId}_${receiverId}`);
+    cache.delStartWith(`messages_${receiverId}_${senderId}`);
 
     const normalizedMessage = {
       id: newMessage.id,
