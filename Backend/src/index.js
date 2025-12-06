@@ -9,6 +9,7 @@ const helmet = require("helmet");
 require("dotenv").config();
 const compression = require("compression");
 const { server, app } = require("./lib/socket");
+const pool = require("./lib/db");
 const ConnectUser = require("./models/user.model");
 const createMessagesTable = require("./models/message.model");
 const ChatLock = require("./models/chatlock.model");
