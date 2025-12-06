@@ -6,162 +6,127 @@ import toast from "react-hot-toast";
 let messageListenerRef = null;
 
 export const useChatStore = create((set, get) => ({
-  messages: [],
-  users: [],
-  selectedUser: null,
-  typingUserId: null,
-  isUsersLoading: false,
-  isMessagesLoading: false,
-  hasMoreMessages: true,
-  isLoadingMore: false,
+      messages: [],
+      users: [],
+      selectedUser: null,
+      typingUserId: null,
+      isUsersLoading: false,
+      isMessagesLoading: false,
 
-  setTypingUserId: (id) => set({ typingUserId: id }),
+      setTypingUserId: (id) => set({ typingUserId: id }),
 
-  setMessages: (msgs) => set({ messages: msgs }),
+      getUsers: async () => {
+        set({ isUsersLoading: true });
+        try {
+          const { data } = await axiosInstance.get("/messages/users");
+          set({ users: data || [] });
+        } catch {
+          set({ users: [] });
+        } finally {
+          set({ isUsersLoading: false });
+        }
+      },
 
-  getUsers: async () => {
-    set({ isUsersLoading: true });
-    try {
-      const { data } = await axiosInstance.get("/messages/users");
-      set({ users: data || [] });
-    } catch {
-      set({ users: [] });
-    } finally {
-      set({ isUsersLoading: false });
-    }
-  },
+      getMessages: async (userId) => {
+        set({ isMessagesLoading: true });
+        try {
+          const { data } = await axiosInstance.get(`/messages/${userId}`);
+          if (!Array.isArray(data)) return;
+          set({
+            messages: data.map((m) => ({
+              ...m,
+              senderId: m.senderid || m.senderId,
+              receiverId: m.receiverid || m.receiverId,
+              createdAt: m.createdat || m.createdAt,
+            })),
+          });
+        } catch {
+          set({ messages: [] });
+        } finally {
+          set({ isMessagesLoading: false });
+        }
+      },
 
-  getMessages: async (userId) => {
-    set({ isMessagesLoading: true, hasMoreMessages: true });
-    try {
-      const { data } = await axiosInstance.get(`/messages/${userId}`);
-      if (!Array.isArray(data)) return;
-      set({
-        messages: data.map((m) => ({
-          ...m,
-          senderId: m.senderid || m.senderId,
-          receiverId: m.receiverid || m.receiverId,
-          createdAt: m.createdat || m.createdAt,
-        })),
-      });
-    } catch {
-      set({ messages: [] });
-    } finally {
-      set({ isMessagesLoading: false });
-    }
-  },
+      sendMessage: async ({ text, image }) => {
+        const { selectedUser, messages } = get();
+        const authUser = useAuthStore.getState().authUser;
+        if (!selectedUser || !authUser) return;
 
-  // loadMoreMessages: async () => {
-  //   const { messages, selectedUser, hasMoreMessages, isLoadingMore } = get();
-  //   if (!selectedUser || !hasMoreMessages || isLoadingMore) return;
+        const tempId = Date.now();
+        const tempMsg = {
+          id: tempId,
+          text,
+          image,
+          senderId: authUser.id,
+          receiverId: selectedUser.id,
+          createdAt: new Date().toISOString(),
+          pending: true,
+        };
 
-  //   const oldest = messages[0]; 
-  //   if (!oldest) return;
+        set({ messages: [...messages, tempMsg] });
 
-  //   set({ isLoadingMore: true });
+        try {
+          const { data: savedMsg } = await axiosInstance.post(
+            `/messages/send/${selectedUser.id}`,
+            { text, image, tempId }
+          );
 
-  //   try {
-  //     const { data } = await axiosInstance.get(
-  //       `/messages/${selectedUser.id}?before=${oldest.createdAt}`
-  //     );
+          set((state) => ({
+            messages: state.messages.map((m) =>
+              m.id === tempId ? { ...savedMsg, senderId: authUser.id } : m
+            ),
+          }));
+        } catch (err) {
+          toast.error("Message failed to send");
+          set((state) => ({
+            messages: state.messages.map((m) =>
+              m.id === tempId ? { ...m, failed: true } : m
+            ),
+          }));
+        }
+      },
 
-  //     if (!data || data.length === 0) {
-  //       set({ hasMoreMessages: false });
-  //       return;
-  //     }
+      subscribeToMessages: () => {
+        const socket = useAuthStore.getState().socket;
+        if (!socket) return;
 
-  //     set({ messages: [...data.map((m) => ({
-  //       ...m,
-  //       senderId: m.senderid || m.senderId,
-  //       receiverId: m.receiverid || m.receiverId,
-  //       createdAt: m.createdat || m.createdAt,
-  //     })), ...messages] });
-  //   } catch (err) {
-  //     console.error("Failed to load more messages", err);
-  //   } finally {
-  //     set({ isLoadingMore: false });
-  //   }
-  // },
+        messageListenerRef = (newMessage) => {
+          const msg = {
+            ...newMessage,
+            senderId: newMessage.senderid || newMessage.senderId,
+            receiverId: newMessage.receiverid || newMessage.receiverId,
+            createdAt: newMessage.createdat || newMessage.createdAt,
+          };
 
-  sendMessage: async ({ text, image }) => {
-    const { selectedUser, messages } = get();
-    const authUser = useAuthStore.getState().authUser;
-    if (!selectedUser || !authUser) return;
+          const authUser = useAuthStore.getState().authUser;
+          if (!authUser) return;
 
-    const tempId = Date.now();
-    const tempMsg = {
-      id: tempId,
-      text,
-      image,
-      senderId: authUser.id,
-      receiverId: selectedUser.id,
-      createdAt: new Date().toISOString(),
-      pending: true,
-    };
+          if (msg.senderId === authUser.id) {
+            set((state) => ({
+              messages: state.messages.map((m) =>
+                m.id === msg.tempId ? { ...msg, pending: false } : m
+              ),
+            }));
+            return;
+          }
 
-    set({ messages: [...messages, tempMsg] });
+          const exists = get().messages.some((m) => m.id === msg.id);
+          if (exists) return;
 
-    try {
-      const { data: savedMsg } = await axiosInstance.post(
-        `/messages/send/${selectedUser.id}`,
-        { text, image, tempId }
-      );
+          set((state) => ({ messages: [...state.messages, msg] }));
+        };
 
-      set((state) => ({
-        messages: state.messages.map((m) =>
-          m.id === tempId ? { ...savedMsg, senderId: authUser.id } : m
-        ),
-      }));
-    } catch (err) {
-      toast.error("Message failed to send");
-      set((state) => ({
-        messages: state.messages.map((m) =>
-          m.id === tempId ? { ...m, failed: true } : m
-        ),
-      }));
-    }
-  },
+        socket.on("receiveMessage", messageListenerRef);
+      },
 
-  subscribeToMessages: () => {
-    const socket = useAuthStore.getState().socket;
-    if (!socket) return;
+      unsubscribeFromMessages: () => {
+        const socket = useAuthStore.getState().socket;
+        if (messageListenerRef && socket) {
+          socket.off("receiveMessage", messageListenerRef);
+          messageListenerRef = null;
+        }
+      },
 
-    messageListenerRef = (newMessage) => {
-      const msg = {
-        ...newMessage,
-        senderId: newMessage.senderid || newMessage.senderId,
-        receiverId: newMessage.receiverid || newMessage.receiverId,
-        createdAt: newMessage.createdat || newMessage.createdAt,
-      };
-
-      const authUser = useAuthStore.getState().authUser;
-      if (!authUser) return;
-
-      if (msg.senderId === authUser.id) {
-        set((state) => ({
-          messages: state.messages.map((m) =>
-            m.id === msg.tempId ? { ...msg, pending: false } : m
-          ),
-        }));
-        return;
-      }
-
-      const exists = get().messages.some((m) => m.id === msg.id);
-      if (exists) return;
-
-      set((state) => ({ messages: [...state.messages, msg] }));
-    };
-
-    socket.on("receiveMessage", messageListenerRef);
-  },
-
-  unsubscribeFromMessages: () => {
-    const socket = useAuthStore.getState().socket;
-    if (messageListenerRef && socket) {
-      socket.off("receiveMessage", messageListenerRef);
-      messageListenerRef = null;
-    }
-  },
-
-  setSelectedUser: (selectedUser) => set({ selectedUser }),
-}));
+      setSelectedUser: (selectedUser) => set({ selectedUser }),
+    }),
+);

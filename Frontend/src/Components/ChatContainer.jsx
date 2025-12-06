@@ -42,10 +42,6 @@ const ChatContainer = () => {
     return () => unsubscribeFromMessages();
   }, [selectedUser, getMessages, subscribeToMessages, unsubscribeFromMessages]);
 
-  useEffect(() => {
-    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
   const listData = useMemo(() => ({ messages, authUser, selectedUser }), [ messages, authUser, selectedUser ]);
 
   if (isMessagesLoading) {
