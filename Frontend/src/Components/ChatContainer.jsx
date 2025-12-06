@@ -6,6 +6,7 @@ import MessageInput from "./MessageInput";
 import MessageSkeleton from "./skeletons/MessageSkeleton";
 import MessageContainer from "./MessageContainer";
 import "./ChatContainer.css";
+import { useChatScroll } from "../hooks/useChatScroll";
 
 const ChatContainer = () => {
   const {
