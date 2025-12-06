@@ -10,17 +10,15 @@ const getUsersForSidebar = async (req, res) => {
     const cacheKey = `users_sidebar_${loggedInUserId}`;
     const cachedUsers = cache.get(cacheKey);
 
-    if (cachedUsers) {
-      return res.status(200).json(cachedUsers);
-    }
+    if (cachedUsers) return res.status(200).json(cachedUsers);
 
     const { rows: filteredUsers } = await pool.query(
-      `SELECT id, fullname, email, profilepic, isonline AS "isOnline", lastseen AS "lastSeen" FROM users WHERE id != $1`,
+      `SELECT id, fullname, email, profilepic, isonline AS "isOnline", lastseen AS "lastSeen"
+       FROM users WHERE id != $1`,
       [loggedInUserId]
     );
 
     cache.set(cacheKey, filteredUsers);
-
     res.status(200).json(filteredUsers);
 
   } catch (error) {
@@ -33,40 +31,25 @@ const getMessages = async (req, res) => {
   try {
     const { id: userToChatId } = req.params;
     const myId = req.user.id;
-    const before = req.query.before;
 
-    const cacheKey = before
-      ? `messages_${myId}_${userToChatId}_before_${before}`
-      : `messages_${myId}_${userToChatId}_latest`;
-
+    const cacheKey = `messages_${myId}_${userToChatId}_all`;
     const cached = cache.get(cacheKey);
     if (cached) return res.status(200).json(cached);
 
-    let query = `
-      SELECT id, senderid, receiverid, text, image, createdat
-      FROM messages
-      WHERE 
-        (senderid = $1 AND receiverid = $2)
-        OR
-        (senderid = $2 AND receiverid = $1)
-    `;
+    const { rows } = await pool.query(
+      `SELECT id, senderid, receiverid, text, image, createdat
+       FROM messages
+       WHERE 
+         (senderid = $1 AND receiverid = $2)
+         OR
+         (senderid = $2 AND receiverid = $1)
+       ORDER BY createdat ASC`,
+      [myId, userToChatId]
+    );
 
-    const params = [myId, userToChatId];
+    cache.set(cacheKey, rows);
+    res.status(200).json(rows);
 
-    if (before) {
-      query += ` AND createdat < $3 `;
-      params.push(before);
-    }
-
-    query += ` ORDER BY createdat DESC LIMIT 30`;
-
-    const { rows } = await pool.query(query, params);
-
-    const messagesASC = rows.reverse();
-
-    cache.set(cacheKey, messagesASC);
-
-    res.status(200).json(messagesASC);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
@@ -81,9 +64,11 @@ const sendMessage = async (req, res) => {
     const { id: receiverId } = req.params;
     const { text, image, tempId } = req.body;
 
-    if (!text && !image) return res.status(400).json({ error: "Message text or image required" });
+    if (!text && !image)
+      return res.status(400).json({ error: "Message text or image required" });
 
     let imageUrl = null;
+
     if (image) {
       const uploadResponse = await cloudinary.uploader.upload(image);
       imageUrl = uploadResponse.secure_url;
@@ -114,9 +99,11 @@ const sendMessage = async (req, res) => {
     if (receiverSocketId) io.to(receiverSocketId).emit("receiveMessage", normalizedMessage);
 
     const senderSocketId = getReceiverSocketId(senderId);
-    if (senderSocketId) io.to(senderSocketId).emit("messageSent", { ...normalizedMessage, tempId });
+    if (senderSocketId)
+      io.to(senderSocketId).emit("messageSent", { ...normalizedMessage, tempId });
 
     res.status(201).json(normalizedMessage);
+
   } catch (error) {
     console.error(error.stack);
     res.status(500).json({ error: "Internal server error" });

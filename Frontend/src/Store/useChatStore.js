@@ -51,37 +51,37 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  loadMoreMessages: async () => {
-    const { messages, selectedUser, hasMoreMessages, isLoadingMore } = get();
-    if (!selectedUser || !hasMoreMessages || isLoadingMore) return;
+  // loadMoreMessages: async () => {
+  //   const { messages, selectedUser, hasMoreMessages, isLoadingMore } = get();
+  //   if (!selectedUser || !hasMoreMessages || isLoadingMore) return;
 
-    const oldest = messages[0]; 
-    if (!oldest) return;
+  //   const oldest = messages[0]; 
+  //   if (!oldest) return;
 
-    set({ isLoadingMore: true });
+  //   set({ isLoadingMore: true });
 
-    try {
-      const { data } = await axiosInstance.get(
-        `/messages/${selectedUser.id}?before=${oldest.createdAt}`
-      );
+  //   try {
+  //     const { data } = await axiosInstance.get(
+  //       `/messages/${selectedUser.id}?before=${oldest.createdAt}`
+  //     );
 
-      if (!data || data.length === 0) {
-        set({ hasMoreMessages: false });
-        return;
-      }
+  //     if (!data || data.length === 0) {
+  //       set({ hasMoreMessages: false });
+  //       return;
+  //     }
 
-      set({ messages: [...data.map((m) => ({
-        ...m,
-        senderId: m.senderid || m.senderId,
-        receiverId: m.receiverid || m.receiverId,
-        createdAt: m.createdat || m.createdAt,
-      })), ...messages] });
-    } catch (err) {
-      console.error("Failed to load more messages", err);
-    } finally {
-      set({ isLoadingMore: false });
-    }
-  },
+  //     set({ messages: [...data.map((m) => ({
+  //       ...m,
+  //       senderId: m.senderid || m.senderId,
+  //       receiverId: m.receiverid || m.receiverId,
+  //       createdAt: m.createdat || m.createdAt,
+  //     })), ...messages] });
+  //   } catch (err) {
+  //     console.error("Failed to load more messages", err);
+  //   } finally {
+  //     set({ isLoadingMore: false });
+  //   }
+  // },
 
   sendMessage: async ({ text, image }) => {
     const { selectedUser, messages } = get();
