@@ -64,8 +64,7 @@ const sendMessage = async (req, res) => {
     const { id: receiverId } = req.params;
     const { text, image, tempId } = req.body;
 
-    if (!text && !image)
-      return res.status(400).json({ error: "Message text or image required" });
+    if (!text && !image) return res.status(400).json({ error: "Message text or image required" });
 
     let imageUrl = null;
 
