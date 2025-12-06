@@ -83,9 +83,6 @@ const sendMessage = async (req, res) => {
 
     const newMessage = result.rows[0];
 
-    cache.delStartWith(`messages_${senderId}_${receiverId}`);
-    cache.delStartWith(`messages_${receiverId}_${senderId}`);
-
     const normalizedMessage = {
       id: newMessage.id,
       text: newMessage.text,
