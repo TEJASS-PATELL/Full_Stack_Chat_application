@@ -6,6 +6,6 @@ const router = express.Router();
 router.get("/users", protectRoute, getUsersForSidebar);
 router.get("/:id", protectRoute, getMessages);
 router.post("/send/:id", protectRoute, sendMessage);
-router.delete("/delete-image/:messageId", deleteMessageImage);
+router.delete("/delete-image/:messageId", protectRoute, deleteMessageImage);
 
 module.exports = router;

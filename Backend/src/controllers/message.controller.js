@@ -108,6 +108,10 @@ const sendMessage = async (req, res) => {
 
 const deleteMessageImage = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
     const userId = req.user.id;
     const { messageId } = req.params;
     const { imageUrl } = req.body;
@@ -137,7 +141,9 @@ const deleteMessageImage = async (req, res) => {
       return res.status(400).json({ error: "No image exists for this message" });
     }
 
-    const publicId = imageUrl.split("/").pop().split(".")[0];
+    const urlParts = imageUrl.split("/");
+    const fileName = urlParts[urlParts.length - 1];
+    const publicId = fileName.split(".")[0];
 
     try {
       await cloudinary.uploader.destroy(publicId);
@@ -150,23 +156,19 @@ const deleteMessageImage = async (req, res) => {
       [messageId]
     );
 
-    cache.clear();
+    cache.clear(); 
 
-    const senderId = message.senderid;
-    const receiverId = message.receiverid;
-
-    const senderSocketId = getReceiverSocketId(senderId);
-    const receiverSocketId = getReceiverSocketId(receiverId);
-
+    const senderSocketId = getReceiverSocketId(message.senderid);
+    const receiverSocketId = getReceiverSocketId(message.receiverid);
     const payload = { messageId, image: null };
 
     if (senderSocketId) io.to(senderSocketId).emit("imageDeleted", payload);
     if (receiverSocketId) io.to(receiverSocketId).emit("imageDeleted", payload);
 
-    res.json({ success: true, messageId });
+    res.status(200).json({ success: true, messageId });
 
   } catch (err) {
-    console.error(err.stack);
+    console.error("Delete message image error:", err.stack);
     res.status(500).json({ error: "Internal server error" });
   }
 };

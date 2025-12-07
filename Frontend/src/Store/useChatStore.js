@@ -99,21 +99,17 @@ export const useChatStore = create((set, get) => ({
     }));
 
     try {
-      await axiosInstance.delete(`/messages/delete-image/${messageId}`, {
-        data: { imageUrl },
-      });
-
+      const res = await axiosInstance.delete(`/messages/delete-image/${messageId}`, { data: { imageUrl } });
+      if (res.status !== 200) throw new Error("Failed to delete image");
       set((state) => ({
         messages: state.messages.map((m) =>
           m.id === messageId ? { ...m, deleting: false } : m
         ),
       }));
-
       toast.success("Image deleted");
     } catch (err) {
       toast.error("Failed to delete image");
-      console.log(err)
-
+      console.error(err);
       set((state) => ({
         messages: state.messages.map((m) =>
           m.id === messageId ? { ...m, deleting: false, image: imageUrl } : m
