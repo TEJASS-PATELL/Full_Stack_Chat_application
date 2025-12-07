@@ -16,6 +16,7 @@ const ChatContainer = () => {
     selectedUser,
     subscribeToMessages,
     unsubscribeFromMessages,
+    deleteImage,
     setTypingUserId,
   } = useChatStore();
 
@@ -42,7 +43,7 @@ const ChatContainer = () => {
     return () => unsubscribeFromMessages();
   }, [selectedUser, getMessages, subscribeToMessages, unsubscribeFromMessages]);
 
-  const listData = useMemo(() => ({ messages, authUser, selectedUser }), [ messages, authUser, selectedUser ]);
+  const listData = useMemo(() => ({ messages, authUser, selectedUser, deleteImage }), [ messages, authUser, selectedUser, deleteImage ]);
 
   if (isMessagesLoading) {
     return (

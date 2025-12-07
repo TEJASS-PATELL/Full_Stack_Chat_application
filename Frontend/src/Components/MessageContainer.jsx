@@ -25,7 +25,7 @@ const MessageContainer = React.memo(({ index, data }) => {
       <div className="message-contentt">
         <div className={message.image ? "message-bubble-image" : "message-bubble"}>
           {message.image && (
-            <button className="delete-image" onClick={handleImageDelete(message.image, message.senderId)}>
+            <button className="delete-image" onClick={() => handleImageDelete(message.image, message.id)}>
               <Trash2 size={25} />
             </button>
           )}
