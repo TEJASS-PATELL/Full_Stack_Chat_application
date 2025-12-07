@@ -156,7 +156,11 @@ const deleteMessageImage = async (req, res) => {
       [messageId]
     );
 
-    cache.clear(); 
+    if (cache && typeof cache.flushAll === "function") {
+      cache.flushAll();
+    } else if (cache && typeof cache === "object") {
+      Object.keys(cache).forEach((key) => delete cache[key]);
+    }
 
     const senderSocketId = getReceiverSocketId(message.senderid);
     const receiverSocketId = getReceiverSocketId(message.receiverid);
