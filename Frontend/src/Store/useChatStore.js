@@ -112,6 +112,7 @@ export const useChatStore = create((set, get) => ({
       toast.success("Image deleted");
     } catch (err) {
       toast.error("Failed to delete image");
+      console.log(err)
 
       set((state) => ({
         messages: state.messages.map((m) =>
