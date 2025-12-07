@@ -86,38 +86,6 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  deleteImage: async (imageUrl, messageId) => {
-    const authUser = useAuthStore.getState().authUser;
-    const selectedUser = get().selectedUser;
-
-    if (!authUser || !selectedUser) return;
-
-    set((state) => ({
-      messages: state.messages.map((m) =>
-        m.id === messageId ? { ...m, image: null, deleting: true } : m
-      ),
-    }));
-
-    try {
-      const res = await axiosInstance.delete(`/messages/delete-image/${messageId}`, { data: { imageUrl } });
-      if (res.status !== 200) throw new Error("Failed to delete image");
-      set((state) => ({
-        messages: state.messages.map((m) =>
-          m.id === messageId ? { ...m, deleting: false } : m
-        ),
-      }));
-      toast.success("Image deleted");
-    } catch (err) {
-      toast.error("Failed to delete image");
-      console.error(err);
-      set((state) => ({
-        messages: state.messages.map((m) =>
-          m.id === messageId ? { ...m, deleting: false, image: imageUrl } : m
-        ),
-      }));
-    }
-  },
-
   subscribeToMessages: () => {
     const socket = useAuthStore.getState().socket;
     if (!socket) return;
