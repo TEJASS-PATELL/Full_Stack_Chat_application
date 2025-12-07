@@ -6,127 +6,163 @@ import toast from "react-hot-toast";
 let messageListenerRef = null;
 
 export const useChatStore = create((set, get) => ({
-      messages: [],
-      users: [],
-      selectedUser: null,
-      typingUserId: null,
-      isUsersLoading: false,
-      isMessagesLoading: false,
+  messages: [],
+  users: [],
+  selectedUser: null,
+  typingUserId: null,
+  isUsersLoading: false,
+  isMessagesLoading: false,
 
-      setTypingUserId: (id) => set({ typingUserId: id }),
+  setTypingUserId: (id) => set({ typingUserId: id }),
 
-      getUsers: async () => {
-        set({ isUsersLoading: true });
-        try {
-          const { data } = await axiosInstance.get("/messages/users");
-          set({ users: data || [] });
-        } catch {
-          set({ users: [] });
-        } finally {
-          set({ isUsersLoading: false });
-        }
-      },
+  getUsers: async () => {
+    set({ isUsersLoading: true });
+    try {
+      const { data } = await axiosInstance.get("/messages/users");
+      set({ users: data || [] });
+    } catch {
+      set({ users: [] });
+    } finally {
+      set({ isUsersLoading: false });
+    }
+  },
 
-      getMessages: async (userId) => {
-        set({ isMessagesLoading: true });
-        try {
-          const { data } = await axiosInstance.get(`/messages/${userId}`);
-          if (!Array.isArray(data)) return;
-          set({
-            messages: data.map((m) => ({
-              ...m,
-              senderId: m.senderid || m.senderId,
-              receiverId: m.receiverid || m.receiverId,
-              createdAt: m.createdat || m.createdAt,
-            })),
-          });
-        } catch {
-          set({ messages: [] });
-        } finally {
-          set({ isMessagesLoading: false });
-        }
-      },
+  getMessages: async (userId) => {
+    set({ isMessagesLoading: true });
+    try {
+      const { data } = await axiosInstance.get(`/messages/${userId}`);
+      if (!Array.isArray(data)) return;
+      set({
+        messages: data.map((m) => ({
+          ...m,
+          senderId: m.senderid || m.senderId,
+          receiverId: m.receiverid || m.receiverId,
+          createdAt: m.createdat || m.createdAt,
+        })),
+      });
+    } catch {
+      set({ messages: [] });
+    } finally {
+      set({ isMessagesLoading: false });
+    }
+  },
 
-      sendMessage: async ({ text, image }) => {
-        const { selectedUser, messages } = get();
-        const authUser = useAuthStore.getState().authUser;
-        if (!selectedUser || !authUser) return;
+  sendMessage: async ({ text, image }) => {
+    const { selectedUser, messages } = get();
+    const authUser = useAuthStore.getState().authUser;
+    if (!selectedUser || !authUser) return;
 
-        const tempId = Date.now();
-        const tempMsg = {
-          id: tempId,
-          text,
-          image,
-          senderId: authUser.id,
-          receiverId: selectedUser.id,
-          createdAt: new Date().toISOString(),
-          pending: true,
-        };
+    const tempId = Date.now();
+    const tempMsg = {
+      id: tempId,
+      text,
+      image,
+      senderId: authUser.id,
+      receiverId: selectedUser.id,
+      createdAt: new Date().toISOString(),
+      pending: true,
+    };
 
-        set({ messages: [...messages, tempMsg] });
+    set({ messages: [...messages, tempMsg] });
 
-        try {
-          const { data: savedMsg } = await axiosInstance.post(
-            `/messages/send/${selectedUser.id}`,
-            { text, image, tempId }
-          );
+    try {
+      const { data: savedMsg } = await axiosInstance.post(
+        `/messages/send/${selectedUser.id}`,
+        { text, image, tempId }
+      );
 
-          set((state) => ({
-            messages: state.messages.map((m) =>
-              m.id === tempId ? { ...savedMsg, senderId: authUser.id } : m
-            ),
-          }));
-        } catch (err) {
-          toast.error("Message failed to send");
-          set((state) => ({
-            messages: state.messages.map((m) =>
-              m.id === tempId ? { ...m, failed: true } : m
-            ),
-          }));
-        }
-      },
+      set((state) => ({
+        messages: state.messages.map((m) =>
+          m.id === tempId ? { ...savedMsg, senderId: authUser.id } : m
+        ),
+      }));
+    } catch (err) {
+      toast.error("Message failed to send");
+      set((state) => ({
+        messages: state.messages.map((m) =>
+          m.id === tempId ? { ...m, failed: true } : m
+        ),
+      }));
+    }
+  },
 
-      subscribeToMessages: () => {
-        const socket = useAuthStore.getState().socket;
-        if (!socket) return;
+  deleteImage: async (imageUrl, messageId) => {
+    const { messages } = get();
+    const authUser = useAuthStore.getState().authUser;
+    const selectedUser = get().selectedUser;
 
-        messageListenerRef = (newMessage) => {
-          const msg = {
-            ...newMessage,
-            senderId: newMessage.senderid || newMessage.senderId,
-            receiverId: newMessage.receiverid || newMessage.receiverId,
-            createdAt: newMessage.createdat || newMessage.createdAt,
-          };
+    if (!authUser || !selectedUser) return;
 
-          const authUser = useAuthStore.getState().authUser;
-          if (!authUser) return;
+    set({
+      messages: messages.map((m) =>
+        m.id === messageId ? { ...m, image: null, deleting: true } : m
+      ),
+    });
 
-          if (msg.senderId === authUser.id) {
-            set((state) => ({
-              messages: state.messages.map((m) =>
-                m.id === msg.tempId ? { ...msg, pending: false } : m
-              ),
-            }));
-            return;
-          }
+    try {
+      await axiosInstance.delete(`/messages/delete-image/${messageId}`, {
+        data: { imageUrl },
+      });
 
-          const exists = get().messages.some((m) => m.id === msg.id);
-          if (exists) return;
+      set({
+        messages: messages.map((m) =>
+          m.id === messageId ? { ...m, image: null, deleting: false } : m
+        ),
+      });
 
-          set((state) => ({ messages: [...state.messages, msg] }));
-        };
+      toast.success("Image deleted");
+    } catch (err) {
+      toast.error("Failed to delete image");
 
-        socket.on("receiveMessage", messageListenerRef);
-      },
+      set({
+        messages: messages.map((m) =>
+          m.id === messageId ? { ...m, deleting: false, image: imageUrl } : m
+        ),
+      });
+    }
+  },
 
-      unsubscribeFromMessages: () => {
-        const socket = useAuthStore.getState().socket;
-        if (messageListenerRef && socket) {
-          socket.off("receiveMessage", messageListenerRef);
-          messageListenerRef = null;
-        }
-      },
+  subscribeToMessages: () => {
+    const socket = useAuthStore.getState().socket;
+    if (!socket) return;
 
-      setSelectedUser: (selectedUser) => set({ selectedUser }),
-    }),
+    messageListenerRef = (newMessage) => {
+      const msg = {
+        ...newMessage,
+        senderId: newMessage.senderid || newMessage.senderId,
+        receiverId: newMessage.receiverid || newMessage.receiverId,
+        createdAt: newMessage.createdat || newMessage.createdAt,
+      };
+
+      const authUser = useAuthStore.getState().authUser;
+      if (!authUser) return;
+
+      if (msg.senderId === authUser.id) {
+        set((state) => ({
+          messages: state.messages.map((m) =>
+            m.id === msg.tempId ? { ...msg, pending: false } : m
+          ),
+        }));
+        return;
+      }
+
+      const exists = get().messages.some((m) => m.id === msg.id);
+      if (exists) return;
+
+      set((state) => ({ messages: [...state.messages, msg] }));
+    };
+
+    socket.on("receiveMessage", messageListenerRef);
+  },
+
+  unsubscribeFromMessages: () => {
+    const socket = useAuthStore.getState().socket;
+    if (messageListenerRef && socket) {
+      socket.off("receiveMessage", messageListenerRef);
+      messageListenerRef = null;
+    }
+  },
+
+  setSelectedUser: (selectedUser) => set({ selectedUser }),
+}),
 );

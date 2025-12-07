@@ -106,4 +106,69 @@ const sendMessage = async (req, res) => {
   }
 };
 
-module.exports = { getUsersForSidebar, getMessages, sendMessage };
+const deleteMessageImage = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { messageId } = req.params;
+    const { imageUrl } = req.body;
+
+    if (!imageUrl) {
+      return res.status(400).json({ error: "imageUrl is required" });
+    }
+
+    const { rows } = await pool.query(
+      `SELECT senderid, receiverid, image 
+       FROM messages 
+       WHERE id = $1`,
+      [messageId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Message not found" });
+    }
+
+    const message = rows[0];
+
+    if (message.senderid !== userId) {
+      return res.status(403).json({ error: "You cannot delete this image" });
+    }
+
+    if (!message.image) {
+      return res.status(400).json({ error: "No image exists for this message" });
+    }
+
+    const publicId = imageUrl.split("/").pop().split(".")[0];
+
+    try {
+      await cloudinary.uploader.destroy(publicId);
+    } catch (err) {
+      console.warn("Cloudinary delete failed:", err.message);
+    }
+
+    await pool.query(
+      `UPDATE messages SET image = NULL WHERE id = $1`,
+      [messageId]
+    );
+
+    cache.clear();
+
+    const senderId = message.senderid;
+    const receiverId = message.receiverid;
+
+    const senderSocketId = getReceiverSocketId(senderId);
+    const receiverSocketId = getReceiverSocketId(receiverId);
+
+    const payload = { messageId, image: null };
+
+    if (senderSocketId) io.to(senderSocketId).emit("imageDeleted", payload);
+    if (receiverSocketId) io.to(receiverSocketId).emit("imageDeleted", payload);
+
+    res.json({ success: true, messageId });
+
+  } catch (err) {
+    console.error(err.stack);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+module.exports = { getUsersForSidebar, getMessages, sendMessage, deleteMessageImage };

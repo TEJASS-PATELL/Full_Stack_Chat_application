@@ -26,7 +26,7 @@ app.use(helmet());
 app.use(cookieParser());
 app.use(compression());
 app.use("/api/auth", authRoutes);
-app.use("/api/messages", messageRoutes);
+app.use("/api/messages", looseLimiter, messageRoutes);
 app.use("/api/chat-lock", chatLockRoutes);
 
 app.use((err, req, res, next) => {
