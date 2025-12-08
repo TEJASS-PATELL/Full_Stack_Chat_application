@@ -9,7 +9,7 @@ export const formatLastSeen = (lastSeen) => {
   const diffDay = Math.floor(diffHr / 24);
 
   if (diffMin < 1) return "just now";
-  if (diffMin < 60) return `${diffMin} minute${diffMin > 1 ? "s" : ""} ago`;
+  if (diffMin < 60) return `${diffMin} min${diffMin > 1 ? "s" : ""} ago`;
   if (diffHr < 24) return `${diffHr} hour${diffHr > 1 ? "s" : ""} ago`;
   return `${diffDay} day${diffDay > 1 ? "s" : ""} ago`;
 };

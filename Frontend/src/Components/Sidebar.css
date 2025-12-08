@@ -1,7 +1,7 @@
 .sidebarr {
   width: 300px;
   flex-shrink: 0;
-  background-color: #ffffff;   
+  background-color: #ffffff;
   border-right: 1px solid #dee2e6;
   display: flex;
   flex-direction: column;
@@ -107,13 +107,12 @@
   align-items: center;
   padding: 0.8rem 1rem;
   border-radius: 12px;
-  cursor: pointer;
   margin-bottom: 0.5rem;
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .sidebar-user:hover {
-  background-color: #f8f9fa; 
+  background-color: #f8f9fa;
 }
 
 .sidebar-user.selected {
@@ -196,10 +195,10 @@
 .sidebar-no-users {
   text-align: center;
   padding: 2rem;
-  color: #000000; 
+  color: #000000;
 }
 
-.sidebar-no-users p{
+.sidebar-no-users p {
   margin-bottom: 5px;
 }
 
@@ -258,7 +257,7 @@
     left: 80%;
   }
 
-  .hamburger-btn{
+  .hamburger-btn {
     left: 200px
   }
 
@@ -270,19 +269,42 @@
 }
 
 .status-online {
-  color: #04ff00; 
+  color: #04ff00;
   font-weight: 600;
 }
 
 .status-lastseen {
-  color: #949494; 
+  color: #949494;
   font-style: italic;
   font-weight: 500;
 }
 
+.sidebar-space {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+}
+
+.sidebar-username,
+.sidebar-lastseen-only {
+  padding-right: 28px; 
+}
+
+.lock-icon {
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
 .status-offline {
-  color: #ff0000; 
-   font-weight: 600;
+  color: #ff0000;
+  font-weight: 600;
 }
 
 .modal-overlay {
@@ -291,7 +313,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(17, 24, 39, 0.6); 
+  background: rgba(17, 24, 39, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -369,6 +391,7 @@
     opacity: 0;
     transform: scale(0.96);
   }
+
   to {
     opacity: 1;
     transform: scale(1);

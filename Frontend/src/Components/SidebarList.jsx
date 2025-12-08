@@ -1,7 +1,8 @@
+import { Fingerprint, KeyRound, Lock, LockKeyhole, LockKeyholeOpen, Shield, ShieldCheck, Unlock } from "lucide-react";
 import { useAuthStore } from "../Store/useAuthStore";
 import { formatLastSeen } from "../utils/formatLastSeen";
 
-const SidebarList = ({ users, selectedUser, handleUserClick, handleUserDoubleClick }) => {
+const SidebarList = ({ users, selectedUser, handleUserClick, handleLockIconClick, isUserLocked }) => {
   const { onlineUsers } = useAuthStore();
 
   return (
@@ -16,10 +17,9 @@ const SidebarList = ({ users, selectedUser, handleUserClick, handleUserDoubleCli
         const isSelected = selectedUser?.id === user.id;
 
         return (
-          <div 
+          <div
             key={user.id}
             onClick={() => handleUserClick(user)}
-            onDoubleClick={(e) => handleUserDoubleClick(e, user.id)}
             className={`sidebar-user ${isSelected ? "selected" : ""}`}>
             <div className="sidebar-user-container">
               <div className="sidebar-space">
@@ -39,6 +39,26 @@ const SidebarList = ({ users, selectedUser, handleUserClick, handleUserDoubleCli
                       </span>
                     )}
                   </div>
+
+                  {isUserLocked(user.id) ? (
+                    <LockKeyhole
+                      className="lock-icon"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleLockIconClick(e, user.id);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    />
+                  ) : (
+                    <LockKeyholeOpen
+                      className="lock-icon"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleLockIconClick(e, user.id);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    />
+                  )}
                 </div>
               </div>
             </div>

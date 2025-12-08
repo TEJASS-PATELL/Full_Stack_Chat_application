@@ -45,7 +45,7 @@ const Sidebar = () => {
     }, 200);
   };
 
-  const handleUserDoubleClick = (e, userId) => {
+  const handleLockIconClick = (e, userId) => {
     if (clickTimerRef.current) {
       clearTimeout(clickTimerRef.current);
       clickTimerRef.current = null;
@@ -63,7 +63,7 @@ const Sidebar = () => {
           users={users}
           selectedUser={selectedUser}
           handleUserClick={handleUserClick}
-          handleUserDoubleClick={handleUserDoubleClick}
+          handleLockIconClick={handleLockIconClick}
           isUserLocked={isUserLocked}/>
       </div>
       {showLockModal && (
