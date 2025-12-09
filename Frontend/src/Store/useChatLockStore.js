@@ -6,8 +6,7 @@ export const useChatLockStore = create((set, get) => ({
   lockedUserIds: new Set(),
   isLocking: false,
   isFetchingLocks: false,
-  
-  //* Important for maintain lock after reload
+
   fetchLockedChats: async (users) => {
     set({ isFetchingLocks: true });
     try {
