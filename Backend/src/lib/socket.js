@@ -50,11 +50,7 @@ io.on("connection", async (socket) => {
   socket.on("sendMessage", ({ fromUserId, toUserId, tempId }) => {
     const receiverSocketId = getReceiverSocketId(toUserId);
     if (receiverSocketId) {
-      io.to(receiverSocketId).emit("incomingMessage", {
-        fromUserId,
-        toUserId,
-        tempId,
-      });
+      io.to(receiverSocketId).emit("incomingMessage", { fromUserId, toUserId, tempId});
     }
   });
 

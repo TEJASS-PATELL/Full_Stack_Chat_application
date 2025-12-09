@@ -8,10 +8,8 @@ const pool = new Pool({
 
 (async () => {
   try {
-    const res = await pool.query("SELECT NOW()");
-    console.log("PostgreSQL connected at:", res.rows[0].now);
+    await pool.query("SELECT NOW()");
   } catch (err) {
-    console.error("PostgreSQL connection error:", err.message);
     process.exit(1);
   }
 })();

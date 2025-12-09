@@ -1,7 +1,7 @@
 const pool = require("../lib/db");
 const cloudinary = require("../lib/cloudinary");
 const { getReceiverSocketId, io } = require("../lib/socket");
-const cache = require("../lib/cache");
+const cache = require("../helper/cache");
 
 const getUsersForSidebar = async (req, res) => {
   try {
