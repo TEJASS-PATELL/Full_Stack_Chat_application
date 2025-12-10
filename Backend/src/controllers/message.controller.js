@@ -95,8 +95,7 @@ const sendMessage = async (req, res) => {
     if (receiverSocketId) io.to(receiverSocketId).emit("receiveMessage", normalizedMessage);
 
     const senderSocketId = getReceiverSocketId(senderId);
-    if (senderSocketId)
-      io.to(senderSocketId).emit("messageSent", { ...normalizedMessage, tempId });
+    if (senderSocketId) io.to(senderSocketId).emit("messageSent", { ...normalizedMessage, tempId });
 
     res.status(201).json(normalizedMessage);
 
