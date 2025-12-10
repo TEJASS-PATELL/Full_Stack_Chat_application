@@ -3,7 +3,7 @@ const cookieParser = require("cookie-parser");
 const authRoutes = require("./routers/auth.route");
 const messageRoutes = require("./routers/message.route");
 const chatLockRoutes = require("./routers/chatLock.route");
-const { looseLimiter } = require("./helper/limiter");
+const { looseLimiter, strictLimiter } = require("./helper/limiter");
 const cors = require("cors");
 const helmet = require("helmet");
 require("dotenv").config();
@@ -27,7 +27,7 @@ app.use(cookieParser());
 app.use(compression());
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", looseLimiter, messageRoutes);
-app.use("/api/chat-lock", chatLockRoutes);
+app.use("/api/chat-lock", strictLimiter, chatLockRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

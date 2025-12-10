@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const io = new Server(server, {
-  cors: {
+  cors: { 
     origin: [process.env.CLIENT_URL],
     methods: ["GET", "POST"],
     credentials: true,
@@ -28,10 +28,7 @@ io.on("connection", async (socket) => {
     userSocketMap[userId] = socket.id;
 
     try {
-      await pool.query(
-        "UPDATE users SET isonline = true WHERE id = $1",
-        [userId]
-      );
+      await pool.query( "UPDATE users SET isonline = true WHERE id = $1",[userId]);
     } catch (err) {
       console.error("DB error (online):", err.stack);
     }
