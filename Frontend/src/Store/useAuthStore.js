@@ -122,12 +122,10 @@ export const useAuthStore = create((set, get) => ({
     });
 
     newSocket.on("getOnlineUsers", (userIds) => {
-      // console.log("Online users updated:", userIds);
       set({ onlineUsers: userIds });
     });
 
     newSocket.on("disconnect", (reason) => {
-      // console.log("Socket disconnected:", reason);
       set({ socket: null });
     });
 
