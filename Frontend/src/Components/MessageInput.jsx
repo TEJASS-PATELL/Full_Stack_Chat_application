@@ -50,7 +50,6 @@ const MessageInput = () => {
     setText("");
     setImagePreview(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
-
     try {
       await sendMessage({ text: tempMsg.text, image: tempMsg.image });
     } catch {
@@ -62,10 +61,7 @@ const MessageInput = () => {
     const value = e.target.value;
     setText(value);
     if (selectedUser && authUser && socket) {
-      socket.emit("typing", {
-        toUserId: selectedUser.id,
-        userId: authUser.id,
-      });
+      socket.emit("typing", { toUserId: selectedUser.id, userId: authUser.id });
     }
   };
 

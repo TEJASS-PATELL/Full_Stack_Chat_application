@@ -14,7 +14,7 @@ export const useAuthStore = create((set, get) => ({
   isCheckingAuth: true,
   onlineUsers: [],
   socket: null,
-
+  
   checkAuth: async () => {
     try {
       const res = await axiosInstance.get("/auth/check", {
@@ -115,10 +115,6 @@ export const useAuthStore = create((set, get) => ({
       query: { userId },
       transports: ["websocket"],
       withCredentials: true,
-    });
-
-    newSocket.on("connect", () => {
-      // console.log("Socket connected:", newSocket.id);
     });
 
     newSocket.on("getOnlineUsers", (userIds) => {

@@ -17,12 +17,7 @@ const MessageContainer = React.memo(({ index, data }) => {
   return (
     <div className={`message ${isSender ? "message-incoming" : "message-outgoing"}`}>
       <div className="avatar-wrapperr">
-        <img
-          src={
-            isSender
-              ? authUser.profilepic || authUser.profilePic || "./user.png"
-              : selectedUser?.profilepic || selectedUser?.profilePic || "./user.png"
-          }
+        <img src={ isSender ? authUser.profilepic || "./user.png" : selectedUser?.profilepic || "./user.png"}
           alt="profile pic"
           className="avatarr"
         />
@@ -49,7 +44,7 @@ const MessageContainer = React.memo(({ index, data }) => {
 
           {message.text && <p className="message-text">{message.text}</p>}
           <time className={message.image ? "timestapimg" : "timestamp"}>
-            {formatMessageTime(message.createdAt || message.createdat)}
+            {formatMessageTime(message.createdat)}
           </time>
         </div>
       </div>

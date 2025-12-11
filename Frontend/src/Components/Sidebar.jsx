@@ -66,9 +66,7 @@ const Sidebar = () => {
           handleLockIconClick={handleLockIconClick}
           isUserLocked={isUserLocked}/>
       </div>
-      {showLockModal && (
-        <LockModal setShowLockModal={setShowLockModal} currentLockUserId={currentLockUserId} />
-      )}
+      {showLockModal && ( <LockModal setShowLockModal={setShowLockModal} currentLockUserId={currentLockUserId} />)}
     </>
   );
 };
