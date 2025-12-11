@@ -99,34 +99,29 @@ const MessageInput = () => {
           className="message-input-field"
           placeholder="Type a message..."
           value={text}
-          onChange={handleTyping}
-        />
+          onChange={handleTyping} />
         <input
           type="file"
           accept="image/*"
           className="file-input"
           ref={fileInputRef}
-          onChange={handleImageChange}
-        />
+          onChange={handleImageChange} />
         <button
           type="button"
           className="icon-btn emoji-btn"
-          onClick={() => setShowEmojiPicker((prev) => !prev)}
-        >
+          onClick={() => setShowEmojiPicker((prev) => !prev)}>
           <BsEmojiSmile size={25} />
         </button>
         <button
           type="button"
           className={`icon-btn image-upload-btn ${imagePreview ? "has-image" : ""}`}
-          onClick={() => fileInputRef.current?.click()}
-        >
+          onClick={() => fileInputRef.current?.click()}>
           <Image size={25} />
         </button>
         <button
           type="submit"
           className="icon-btn send-buttonn"
-          disabled={!text.trim() && !imagePreview}
-        >
+          disabled={!text.trim() && !imagePreview}>
           <ArrowRight size={25} />
         </button>
       </form>
