@@ -7,7 +7,6 @@ const MessageContainer = React.memo(({ index, data }) => {
   const { messages, authUser, selectedUser } = data;
   const [Loading, setLoading] = useState(true);
   const message = messages[index];
-
   const isSender = message.senderId === authUser.id;
 
   useEffect(() => {
@@ -44,7 +43,7 @@ const MessageContainer = React.memo(({ index, data }) => {
 
           {message.text && <p className="message-text">{message.text}</p>}
           <time className={message.image ? "timestapimg" : "timestamp"}>
-            {formatMessageTime(message.createdat)}
+            {formatMessageTime(message.createdAt || message.createdat)}
           </time>
         </div>
       </div>
