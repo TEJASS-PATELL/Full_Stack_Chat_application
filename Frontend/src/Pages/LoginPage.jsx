@@ -25,7 +25,7 @@ const LoginPage = () => {
             <div className="text-center">
               <img className="images" src="chat.png" alt="Chat Icon" />
               <h1>Welcome Back!!</h1>
-              <p>Sign in to your account</p>
+              <p className="text-centre-p">Sign in to your account</p>
             </div>
 
             <form onSubmit={handleSubmit} className="login-form">
@@ -79,7 +79,7 @@ const LoginPage = () => {
             </form>
 
             <div className="text-center">
-              <p>
+              <p className="login-p">
                 Don't have an account?{" "}
                 <Link to="/signup" className="signup-link">
                   Sign Up

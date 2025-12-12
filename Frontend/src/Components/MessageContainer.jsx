@@ -16,10 +16,8 @@ const MessageContainer = React.memo(({ index, data }) => {
   return (
     <div className={`message ${isSender ? "message-incoming" : "message-outgoing"}`}>
       <div className="avatar-wrapperr">
-        <img src={ isSender ? authUser.profilePic || "./user.png" : selectedUser?.profilepic || "./user.png"}
-          alt="profile pic"
-          className="avatarr"
-        />
+        <img src={ isSender ? authUser.profilePic || "./user.png" : selectedUser?.profilePic || "./user.png"}
+          alt="profile pic" className="avatarr"/>
       </div>
       <div className="message-contentt">
         <div className={message.image ? "message-bubble-image" : "message-bubble"}>

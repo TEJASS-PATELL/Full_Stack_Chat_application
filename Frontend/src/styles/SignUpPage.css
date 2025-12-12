@@ -6,12 +6,12 @@
 }
 
 .signup-container {
-  background: #ffffff;
+  background: rgba(240, 240, 240, 0.821);
   width: 100%;
   max-width: 440px;
   padding: 30px;
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgb(159, 159, 159);
 }
 
 .signup-form {
@@ -94,24 +94,19 @@
 .submit-btn {
   padding: 12px;
   font-size: 16px;
-  background-color: #007bff;
+  background-color: rgb(106, 255, 0);
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 8px;
 }
 
-.submit-btn:hover {
-  background-color: #0056b3;
-}
-
 .submit-btn.disabled {
-  background-color: #7aa7df;
+  background-color: rgb(132, 255, 44);
   cursor: not-allowed;
 }
 
@@ -129,18 +124,14 @@
 
 .login-redirect {
   text-align: center;
-  margin-top: 20px;
-  font-size: 14px;
+  margin-top: 15px;
+  font-size: 15px;
   color: #666;
 }
 
 .login-redirect a {
-  color: #007bff;
-  font-weight: 500;
-  text-decoration: none;
-}
-
-.login-redirect a:hover {
+  color: rgb(106, 255, 0);
+  font-weight: 900;
   text-decoration: underline;
 }
 
