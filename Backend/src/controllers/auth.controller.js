@@ -40,7 +40,7 @@ const signup = async (req, res) => {
       fullname: newUser.fullname,
       email: newUser.email,
       profilePic: newUser.profilepic || null,
-    });
+    }).message("Signup Successfully!");
 
   } catch (error) {
     console.error("Error in signup controller:", error.stack);
@@ -185,10 +185,7 @@ const deleteAccount = async (req, res) => {
     const userId = req.user.id;
     if (!userId) return res.status(401).json({ message: "User ID is missing" });
 
-    await pool.query(
-      `DELETE FROM users WHERE id = $1`,
-      [userId]
-    );
+    await pool.query( `DELETE FROM users WHERE id = $1`, [userId]);
 
     res.clearCookie("jwt", {
       httpOnly: true,

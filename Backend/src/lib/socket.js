@@ -49,7 +49,7 @@ io.on("connection", async (socket) => {
       (id) => userSocketMap[id] === socket.id
     );
 
-    if (disconnectedUserId) {
+    if (disconnectedUserId) { 
       delete userSocketMap[disconnectedUserId];
 
       try {
