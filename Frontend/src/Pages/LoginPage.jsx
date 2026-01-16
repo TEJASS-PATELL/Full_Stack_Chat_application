@@ -1,7 +1,7 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useAuthStore } from "../Store/useAuthStore";
 import { Link } from "react-router-dom";
-import { FaLock, FaLockOpen } from 'react-icons/fa';
+import { FaComments, FaLock, FaLockOpen } from 'react-icons/fa';
 import { Lock, Mail } from "lucide-react";
 import "../styles/LoginPage.css";
 
@@ -10,7 +10,6 @@ const LoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
 
   const { login, isLoggingIn } = useAuthStore();
-  const formRef = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,11 +20,11 @@ const LoginPage = () => {
     <div className="wrapper">
       <div className="login-container">
         <main className="login-form-container">
-          <div className="glassmorphism-form" ref={formRef}>
+          <div className="glassmorphism-form">
             <div className="text-center">
-              <img className="images" src="chat.png" alt="Chat Icon" />
-              <h1>Welcome Back!!</h1>
-              <p className="text-centre-p">Sign in to your account</p>
+              <FaComments className="images" />
+              <h1>Let’s Get Talking!</h1>
+              <p className="text-centre-p">Logged in to access your chats</p>
             </div>
 
             <form onSubmit={handleSubmit} className="login-form">
