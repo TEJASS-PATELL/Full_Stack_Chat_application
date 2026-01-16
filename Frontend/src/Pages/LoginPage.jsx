@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useAuthStore } from "../Store/useAuthStore";
 import { Link } from "react-router-dom";
 import { FaLock, FaLockOpen } from 'react-icons/fa';
