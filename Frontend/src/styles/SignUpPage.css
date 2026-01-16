@@ -161,3 +161,63 @@ footer {
       box-shadow:none;
   }
 }
+
+@media (max-width: 480px) {
+  .signup-page {
+    padding: 12px;
+  }
+
+  .signup-container {
+    max-width: 100%;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 40px;
+  }
+
+  .signup-form h1 {
+    font-size: 1.8rem;
+  }
+
+  .signup-subtext {
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .input-group {
+    margin-bottom: 14px;
+  }
+
+  .input-group label {
+    font-size: 13px;
+  }
+
+  .input-wrapper input {
+    font-size: 14px;
+    padding: 10px 36px 10px 34px;
+  }
+
+  .input-icon {
+    left: 8px;
+    width: 18px;
+    height: 18px;
+  }
+
+  .toggle-password {
+    right: 8px;
+    font-size: 0.9rem;
+  }
+
+  .submit-btn {
+    font-size: 15px;
+    padding: 12px;
+  }
+
+  .login-redirect {
+    font-size: 14px;
+  }
+
+  footer {
+    font-size: 12px;
+    margin-top: 20px;
+  }
+}
