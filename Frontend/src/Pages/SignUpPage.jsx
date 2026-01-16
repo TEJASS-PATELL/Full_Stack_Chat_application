@@ -123,8 +123,10 @@ const SignUpPage = () => {
             <button type="submit" className={`submit-btn ${isSigningUp ? "disabled" : ""}`} disabled={isSigningUp}>
               {isSigningUp ? (
                 <>
-                  <Loader2 className="loader" />
-                  Creating Account...
+                  <div className="loader-container">
+                    <div className="spinner"></div>
+                    <span>Creating Account...</span>
+                  </div>
                 </>
               ) : (
                 "Sign Up"

@@ -6,12 +6,12 @@
 }
 
 .signup-container {
-  background: rgba(240, 240, 240, 0.821);
+  background: rgb(255, 255, 255);
   width: 100%;
   max-width: 440px;
   padding: 30px;
   border-radius: 12px;
-  border: 1px solid rgb(159, 159, 159);
+  border: 1px solid rgb(204, 204, 204);
 }
 
 .signup-form {
@@ -20,6 +20,7 @@
 }
 
 .signup-form h1 {
+  font-size: 2.25rem;
   text-align: center;
   color: #000000;
 }
@@ -42,7 +43,6 @@
   margin-bottom: 20px;
   text-align: center;
 }
-
 
 .input-group label {
   font-size: 14px;
@@ -94,8 +94,9 @@
 .submit-btn {
   padding: 12px;
   font-size: 16px;
+  font-weight: 500;
   background-color: rgb(106, 255, 0);
-  color: white;
+  color: rgb(0, 0, 0);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -108,18 +109,6 @@
 .submit-btn.disabled {
   background-color: rgb(132, 255, 44);
   cursor: not-allowed;
-}
-
-.loader {
-  animation: spin 1s linear infinite;
-  width: 18px;
-  height: 18px;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 .login-redirect {
@@ -139,6 +128,28 @@ footer {
   text-align: center;
   font-size: 13px;
   color: #999;
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f0f0f0;
+  border-top: 3px solid #111111;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 480px){

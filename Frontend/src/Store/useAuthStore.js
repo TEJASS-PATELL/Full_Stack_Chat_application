@@ -14,7 +14,7 @@ export const useAuthStore = create((set, get) => ({
   isCheckingAuth: true,
   onlineUsers: [],
   socket: null,
-  
+
   checkAuth: async () => {
     try {
       const res = await axiosInstance.get("/auth/check", {
@@ -33,9 +33,7 @@ export const useAuthStore = create((set, get) => ({
   signup: async (data) => {
     set({ isSigningUp: true });
     try {
-      const res = await axiosInstance.post("/auth/signup", data, {
-        withCredentials: true,
-      });
+      const res = await axiosInstance.post("/auth/signup", data, { withCredentials: true });
       set({ authUser: res.data });
       toast.success("Account created successfully");
       get().connectSocket(res.data.id);
@@ -93,10 +91,9 @@ export const useAuthStore = create((set, get) => ({
   deleteAccount: async () => {
     set({ isDeletingAccount: true });
     try {
-      await axiosInstance.delete("/auth/delete-account", {
-        withCredentials: true,
-      });
+      await axiosInstance.delete("/auth/delete-account", { withCredentials: true });
       set({ authUser: null });
+      toast.success("Your account has been permanently deleted.");
       get().disconnectSocket();
     } catch (error) {
       toast.error(error.response?.data?.message || "Account deletion failed");

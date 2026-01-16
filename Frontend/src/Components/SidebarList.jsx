@@ -1,6 +1,7 @@
-import { Fingerprint, KeyRound, Lock, LockKeyhole, LockKeyholeOpen, Shield, ShieldCheck, Unlock } from "lucide-react";
+import { LockKeyhole, LockKeyholeOpen } from "lucide-react";
 import { useAuthStore } from "../Store/useAuthStore";
 import { formatLastSeen } from "../utils/formatLastSeen";
+import './SidebarList.css';
 
 const SidebarList = ({ users, selectedUser, handleUserClick, handleLockIconClick, isUserLocked }) => {
   const { onlineUsers } = useAuthStore();
@@ -15,20 +16,16 @@ const SidebarList = ({ users, selectedUser, handleUserClick, handleLockIconClick
       {users.map((user) => {
         const isOnline = onlineUsers.includes(String(user.id));
         const isSelected = selectedUser?.id === user.id;
-
         return (
-          <div
-            key={user.id}
-            onClick={() => handleUserClick(user)}
-            className={`sidebar-user ${isSelected ? "selected" : ""}`}>
+          <div key={user.id} onClick={() => handleUserClick(user)} className={`sidebar-user ${isSelected ? "selected" : ""}`}>
             <div className="sidebar-user-container">
               <div className="sidebar-space">
-                <div className="sidebar-avatar" style={{ marginRight: 10, position: "relative" }}>
+                <div className="sidebar-avatar">
                   <img src={user.profilepic || "user.png"} alt="User" className="avatar-imgg" />
                   <span className={`status-indicatorr ${isOnline ? "online" : "offline"}`} />
                 </div>
 
-                <div style={{ flex: 1 }}>
+                <div className="main-list">
                   <span className="sidebar-username">{user.fullname || "User"}</span>
                   <div className="sidebar-lastseen-only">
                     {isOnline ? (
@@ -38,7 +35,6 @@ const SidebarList = ({ users, selectedUser, handleUserClick, handleLockIconClick
                         Last seen {formatLastSeen(user.lastSeen)}
                       </span>
                     )}
-                  </div>
 
                   {isUserLocked(user.id) ? (
                     <LockKeyhole
@@ -47,7 +43,6 @@ const SidebarList = ({ users, selectedUser, handleUserClick, handleLockIconClick
                         e.stopPropagation();
                         handleLockIconClick(e, user.id);
                       }}
-                      style={{ cursor: "pointer" }}
                     />
                   ) : (
                     <LockKeyholeOpen
@@ -56,9 +51,9 @@ const SidebarList = ({ users, selectedUser, handleUserClick, handleLockIconClick
                         e.stopPropagation();
                         handleLockIconClick(e, user.id);
                       }}
-                      style={{ cursor: "pointer" }}
                     />
                   )}
+                </div>
                 </div>
               </div>
             </div>
