@@ -95,8 +95,8 @@
   padding: 12px;
   font-size: 16px;
   font-weight: 500;
-  background-color: rgb(106, 255, 0);
-  color: rgb(0, 0, 0);
+  background-color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -107,7 +107,7 @@
 }
 
 .submit-btn.disabled {
-  background-color: rgb(132, 255, 44);
+  background-color: #000000;
   cursor: not-allowed;
 }
 
@@ -119,8 +119,12 @@
 }
 
 .login-redirect a {
-  color: rgb(106, 255, 0);
-  font-weight: 900;
+  color: rgb(0, 0, 0);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-redirect a:hover{
   text-decoration: underline;
 }
 
