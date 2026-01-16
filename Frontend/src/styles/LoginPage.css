@@ -170,3 +170,58 @@
     box-shadow: none;
   }
 }
+
+@media (max-width: 480px) {
+  .wrapper {
+    padding: 12px;
+  }
+
+  .login-container {
+    max-width: 100%;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 40px;
+  }
+
+  .images {
+    width: 42px;
+    height: 42px;
+  }
+
+  .login-header h1,
+  .text-center h1 {
+    font-size: 1.8rem;
+  }
+
+  .text-centre-p {
+    font-size: 14px;
+  }
+
+  .labell {
+    font-size: 14px;
+  }
+
+  .input-login {
+    font-size: 14px;
+    padding: 10px 38px 10px 34px;
+  }
+
+  .password-toggle {
+    right: 10px;
+    font-size: 0.9rem;
+  }
+
+  .submit-btnn {
+    font-size: 15px;
+    padding: 12px;
+  }
+
+  .login-p {
+    font-size: 14px;
+  }
+
+  .login-footer {
+    font-size: 12px;
+    margin-top: 20px;
+  }
+}
