@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../Store/useAuthStore";
-import { FaLock, FaLockOpen } from 'react-icons/fa';
-import { Loader2, Lock, Mail, User } from "lucide-react";
+import { Lock, Mail, User, Eye, EyeOff, MessageSquare, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import "../styles/SignUpPage.css";
 
@@ -48,45 +47,44 @@ const SignUpPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const isValid = validateForm();
-    if (isValid === true) {
+    if (validateForm()) {
       const { fullname, email, password } = formData;
       signup({ fullname, email, password });
     }
   };
 
   return (
-    <section className="signup-page">
-      <main className="signup-container">
-        <form className="signup-form" onSubmit={handleSubmit}>
-          <header>
-            <h1>Join the Conversation</h1>
-            <p className="signup-subtext">
-              Create your account and start chatting instantly
-            </p>
-          </header>
+    <div className="auth-wrapper">
+      <div className="auth-card signup-card">
+        <header className="auth-header">
+          <h1>Create Account</h1>
+          <p>Join the community and start chatting</p>
+        </header>
+
+        <form className="auth-form" onSubmit={handleSubmit}>
           <div className="input-group">
             <label htmlFor="fullname">Full Name</label>
             <div className="input-wrapper">
-              <User className="input-icon" />
+              <User className="field-icon" size={18} />
               <input
                 id="fullname"
                 type="text"
-                placeholder="Full Name"
+                placeholder="John Doe"
                 value={formData.fullname}
                 onChange={(e) => setFormData({ ...formData, fullname: e.target.value })}
                 required
               />
             </div>
           </div>
+
           <div className="input-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">Email Address</label>
             <div className="input-wrapper">
-              <Mail className="input-icon" />
+              <Mail className="field-icon" size={18} />
               <input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder="name@example.com"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
@@ -97,7 +95,7 @@ const SignUpPage = () => {
           <div className="input-group">
             <label htmlFor="password">Password</label>
             <div className="input-wrapper">
-              <Lock className="input-icon" />
+              <Lock className="field-icon" size={18} />
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
@@ -106,8 +104,12 @@ const SignUpPage = () => {
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 required
               />
-              <button type="button" className="toggle-password" onClick={() => setShowPassword(!showPassword)}>
-                {showPassword ? <FaLockOpen /> : <FaLock />}
+              <button
+                type="button"
+                className="toggle-btn"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
@@ -115,7 +117,7 @@ const SignUpPage = () => {
           <div className="input-group">
             <label htmlFor="confirmPassword">Confirm Password</label>
             <div className="input-wrapper">
-              <Lock className="input-icon" />
+              <Lock className="field-icon" size={18} />
               <input
                 id="confirmPassword"
                 type={showPassword ? "text" : "password"}
@@ -127,19 +129,25 @@ const SignUpPage = () => {
             </div>
           </div>
 
-          <button type="submit" className={`submit-btn ${isSigningUp ? "disabled" : ""}`} disabled={isSigningUp}>
-            {isSigningUp ? "Creating account..." : "Sign Up"}
+          <button className="auth-btn" type="submit" disabled={isSigningUp}>
+            {isSigningUp ? (
+              <span className="btn-loading">
+                <Loader2 className="animate-spin" size={18} /> Creating...
+              </span>
+            ) : (
+              "Get Started"
+            )}
           </button>
-          <p className="login-redirect">
-            Already have an account? <Link to="/login">Log In</Link>
-          </p>
         </form>
 
-        <footer>
-          <p>&copy; 2025 Chat App. All rights reserved.</p>
+        <footer className="auth-footer">
+          <p>
+            Already have an account? <Link to="/login">Sign In</Link>
+          </p>
+          <div className="copyright">© 2026 CHATAPP. Minimal Edition.</div>
         </footer>
-      </main>
-    </section>
+      </div>
+    </div>
   );
 };
 
