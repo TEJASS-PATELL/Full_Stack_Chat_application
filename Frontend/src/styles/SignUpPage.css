@@ -19,10 +19,11 @@
 
 .auth-card {
   width: 100%;
-  max-width: 440px;
+  max-width: 400px;
   padding: 40px;
+  border-radius: 20px;
   border: 2px solid var(--black);
-  box-shadow: 10px 10px 0px var(--black); /* Signature Brutalist Shadow */
+  box-shadow: 10px 10px 0px var(--black); 
   background: var(--white);
 }
 
@@ -69,7 +70,7 @@
 }
 
 .input-group label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -87,16 +88,6 @@
   color: var(--black);
 }
 
-.input-wrapper input {
-  width: 100%;
-  padding: 12px 12px 12px 40px;
-  border: 1.5px solid var(--black);
-  border-radius: 0;
-  font-size: 14px;
-  outline: none;
-  transition: var(--transition);
-}
-
 .toggle-btn {
   position: absolute;
   right: 12px;
@@ -111,6 +102,7 @@
   padding: 14px;
   background: var(--black);
   color: var(--white);
+  border-radius: 20px;
   border: 2px solid var(--black);
   font-weight: 700;
   text-transform: uppercase;
