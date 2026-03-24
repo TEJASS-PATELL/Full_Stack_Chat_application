@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useAuthStore } from "../Store/useAuthStore";
 import { Link } from "react-router-dom";
-import { FaComments, FaLock, FaLockOpen } from 'react-icons/fa';
-import { Lock, Mail } from "lucide-react";
+import { Lock, Mail, Eye, EyeOff, MessageSquare } from "lucide-react";
 import "../styles/LoginPage.css";
 
 const LoginPage = () => {
@@ -17,75 +16,67 @@ const LoginPage = () => {
   };
 
   return (
-    <section className="wrapper">
-      <main className="login-container">
-        <form className="glassmorphism-form" onSubmit={handleSubmit}>
-          <header className="text-center">
-            <FaComments className="images" />
-            <h1>Let’s Get Talking!</h1>
-            <p className="text-centre-p">Logged in to access your chats</p>
-          </header>
+    <div className="auth-wrapper">
+      <div className="login-card">
+        <header className="login-header">
+          <div className="logo-icon">
+            <img src="whatsapp.png" className="image"/>
+          </div>
+          <h1>Welcome Back</h1>
+          <p>Enter your details to start chatting</p>
+        </header>
 
-          <div className="login-form">
-            <label htmlFor="email" className="labell">Email</label>
-            <div className="inputt-container">
-              <Mail className="input-icon" />
+        <form className="login-form" onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label htmlFor="email">Email Address</label>
+            <div className="input-wrapper">
+              <Mail className="field-icon" size={18} />
               <input
-              id="email"
-                className="input-login"
+                id="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder="name@example.com"
                 value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
               />
             </div>
+          </div>
 
-            <label htmlFor="password" className="labell">Password</label>
-            <div className="inputt-container">
-              <Lock className="input-icon" />
+          <div className="input-group">
+            <label htmlFor="password">Password</label>
+            <div className="input-wrapper">
+              <Lock className="field-icon" size={18} />
               <input
-              id="password"
-                className="input-login"
+                id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
+                placeholder="••••••••••"
                 value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 required
               />
               <button
                 type="button"
-                className="password-toggle"
+                className="toggle-btn"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <FaLockOpen /> : <FaLock />}
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-
-            <button className="submit-btnn" type="submit" disabled={isLoggingIn}>
-              {isLoggingIn ? "Logging in..." : "Log In"}
-            </button>
           </div>
 
-          <div className="text-center">
-            <p className="login-p">
-              Don't have an account?{" "}
-              <Link to="/signup" className="signup-link">
-                Sign Up
-              </Link>
-            </p>
-          </div>
+          <button className="login-btn" type="submit" disabled={isLoggingIn}>
+            {isLoggingIn ? "Authenticating..." : "Sign In"}
+          </button>
         </form>
 
         <footer className="login-footer">
-          <p>&copy; 2025 Chat App. All rights reserved.</p>
+          <p>
+            New here? <Link to="/signup">Create an account</Link>
+          </p>
+          <div className="copyright">© 2026 CHATAPP. Minimal Edition.</div>
         </footer>
-      </main>
-    </section>
+      </div>
+    </div>
   );
 };
 
