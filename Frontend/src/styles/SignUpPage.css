@@ -33,15 +33,19 @@
 }
 
 .logo-icon {
-  background: var(--black);
-  color: var(--white);
-  border-radius: 15px;
-  width: 55px;
-  height: 55px;
+  width: 64px;               
+  height: 64px;             
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 16px;
+  margin: 0 auto 20px;
+}
+
+.image {
+  width: 70px;               
+  height: 70px;
+  object-fit: contain;       
+  transition: transform 0.3s ease;
 }
 
 .auth-header h1 {
