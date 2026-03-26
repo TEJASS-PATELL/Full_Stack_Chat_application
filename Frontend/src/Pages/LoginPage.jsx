@@ -56,7 +56,7 @@ const LoginPage = () => {
               />
               <button
                 type="button"
-                className="toggle-btn"
+                className="toggle-btnn"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -71,7 +71,7 @@ const LoginPage = () => {
 
         <footer className="login-footer">
           <p>
-            New here? <Link to="/signup">Create an account</Link>
+            New here? <Link to="/signup">Create-Account</Link>
           </p>
           <div className="copyright">© 2026 CHATAPP. Minimal Edition.</div>
         </footer>
