@@ -69,7 +69,7 @@ const SignUpPage = () => {
               <input
                 id="fullname"
                 type="text"
-                placeholder="John Doe"
+                placeholder="Name"
                 value={formData.fullname}
                 onChange={(e) => setFormData({ ...formData, fullname: e.target.value })}
                 required
@@ -106,7 +106,7 @@ const SignUpPage = () => {
               />
               <button
                 type="button"
-                className="toggle-btn"
+                className="toggle-btnn"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -142,7 +142,7 @@ const SignUpPage = () => {
 
         <footer className="auth-footer">
           <p>
-            Already have an account? <Link to="/login">Sign In</Link>
+            Already have an account? <Link to="/login">Sign-In</Link>
           </p>
           <div className="copyright">© 2026 CHATAPP. Minimal Edition.</div>
         </footer>
