@@ -28,7 +28,7 @@ io.on("connection", async (socket) => {
     userSocketMap[userId] = socket.id;
 
     try {
-      await pool.query( "UPDATE users SET isonline = true WHERE id = $1",[userId]);
+      await pool.query("UPDATE users SET isonline = true WHERE id = ?", [userId]);
     } catch (err) {
       console.error("DB error (online):", err.stack);
     }
@@ -54,7 +54,7 @@ io.on("connection", async (socket) => {
 
       try {
         await pool.query(
-          "UPDATE users SET isonline = false, lastseen = NOW() WHERE id = $1",
+          "UPDATE users SET isonline = false, lastseen = NOW() WHERE id = ?",
           [disconnectedUserId]
         );
       } catch (err) {
