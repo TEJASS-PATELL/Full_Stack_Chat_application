@@ -8,16 +8,23 @@ const SidebarList = ({ users, selectedUser, handleUserClick, handleLockIconClick
 
   return (
     <div className="sidebar-list">
-      {users.length === 0 && <div className="sidebar-no-users">
-        <p>Looks like you're alone.</p>
-        <p>Invite someone to chat!</p>
-      </div>}
+      {users.length === 0 && (
+        <div className="sidebar-no-users">
+          <p>Looks like you're alone.</p>
+          <p>Invite someone to chat!</p>
+        </div>
+      )}
 
       {users.map((user) => {
         const isOnline = onlineUsers.includes(String(user.id));
         const isSelected = selectedUser?.id === user.id;
+
         return (
-          <div key={user.id} onClick={() => handleUserClick(user)} className={`sidebar-user ${isSelected ? "selected" : ""}`}>
+          <div
+            key={user.id}
+            onClick={() => handleUserClick(user)}
+            className={`sidebar-user ${isSelected ? "selected" : ""}`}
+          >
             <div className="sidebar-user-container">
               <div className="sidebar-space">
                 <div className="sidebar-avatar">
@@ -26,15 +33,20 @@ const SidebarList = ({ users, selectedUser, handleUserClick, handleLockIconClick
                 </div>
 
                 <div className="main-list">
-                  <span className="sidebar-username">{user.fullname || "User"}</span>
-                  <div className="sidebar-lastseen-only">
-                    {isOnline ? (
-                      <span className="status-online">Online</span>
-                    ) : (
-                      <span className="status-lastseen">
-                        Last seen {formatLastSeen(user.lastSeen)}
-                      </span>
-                    )}
+                  <div className="main-list-text-wrapper">
+                    <span className="sidebar-username" title={user.fullname}>
+                      {user.fullname || "User"}
+                    </span>
+                    <div className="sidebar-lastseen-only">
+                      {isOnline ? (
+                        <span className="status-online">Online</span>
+                      ) : (
+                        <span className="status-lastseen">
+                          Last seen {formatLastSeen(user.lastSeen)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
 
                   {isUserLocked(user.id) ? (
                     <LockKeyhole
@@ -53,7 +65,6 @@ const SidebarList = ({ users, selectedUser, handleUserClick, handleLockIconClick
                       }}
                     />
                   )}
-                </div>
                 </div>
               </div>
             </div>
