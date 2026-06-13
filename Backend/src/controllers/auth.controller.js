@@ -15,8 +15,8 @@ const signup = async (req, res) => {
       return res.status(400).json({ message: "Password must be at least 6 characters" });
     }
 
-    const { rows: existingUser } = await pool.query(
-      `SELECT id FROM users WHERE email = $1`,
+    const [existingUser] = await pool.query(
+      `SELECT id FROM users WHERE email = ?`,
       [email]
     );
 
@@ -26,13 +26,19 @@ const signup = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const { rows: result } = await pool.query(
-      `INSERT INTO users (fullname, email, password, createdat) 
-       VALUES ($1, $2, $3, NOW()) RETURNING id, fullname, email, profilepic`,
+    const [result] = await pool.query(
+      `INSERT INTO users (fullname, email, password, createdat) VALUES (?, ?, ?, NOW())`,
       [fullname, email, hashedPassword]
     );
 
-    const newUser = result[0];
+    const newUserId = result.insertId;
+
+    const [userRows] = await pool.query(
+      `SELECT id, fullname, email, profilepic FROM users WHERE id = ?`,
+      [newUserId]
+    );
+
+    const newUser = userRows[0];
     generateToken(newUser.id, res);
 
     res.status(201).json({
@@ -40,7 +46,8 @@ const signup = async (req, res) => {
       fullname: newUser.fullname,
       email: newUser.email,
       profilePic: newUser.profilepic || null,
-    }).message("Signup Successfully!");
+      message: "Signup Successfully!"
+    });
 
   } catch (error) {
     console.error("Error in signup controller:", error.stack);
@@ -56,8 +63,8 @@ const login = async (req, res) => {
       return res.status(400).json({ message: "Email and password are required" });
     }
 
-    const { rows: userRows } = await pool.query(
-      `SELECT id, fullname, email, password, profilepic FROM users WHERE email = $1`,
+    const [userRows] = await pool.query(
+      `SELECT id, fullname, email, password, profilepic FROM users WHERE email = ?`,
       [email]
     );
 
@@ -73,7 +80,7 @@ const login = async (req, res) => {
     }
 
     await pool.query(
-      `UPDATE users SET isonline = true, lastseen = NOW() WHERE id = $1`,
+      `UPDATE users SET isonline = true, lastseen = NOW() WHERE id = ?`,
       [user.id]
     );
 
@@ -98,7 +105,7 @@ const logout = async (req, res) => {
 
     if (userId) {
       await pool.query(
-        `UPDATE users SET isonline = false, lastseen = NOW() WHERE id = $1`,
+        `UPDATE users SET isonline = false, lastseen = NOW() WHERE id = ?`,
         [userId]
       );
     }
@@ -129,12 +136,12 @@ const updateProfile = async (req, res) => {
     const uploadResponse = await cloudinary.uploader.upload(profilepic, { folder: "user_profiles" });
 
     await pool.query(
-      `UPDATE users SET profilepic = $1 WHERE id = $2`,
+      `UPDATE users SET profilepic = ? WHERE id = ?`,
       [uploadResponse.secure_url, userId]
     );
 
-    const { rows: updatedUser } = await pool.query(
-      `SELECT id, fullname, email, profilepic, createdat FROM users WHERE id = $1`,
+    const [updatedUser] = await pool.query(
+      `SELECT id, fullname, email, profilepic, createdat FROM users WHERE id = ?`,
       [userId]
     );
 
@@ -154,9 +161,8 @@ const checkAuth = async (req, res) => {
 
     const userId = req.user.id;
 
-    const { rows: userRows } = await pool.query(
-      `SELECT id, fullname, email, profilepic, createdat, lastseen 
-       FROM users WHERE id = $1`,
+    const [userRows] = await pool.query(
+      `SELECT id, fullname, email, profilepic, createdat, lastseen FROM users WHERE id = ?`,
       [userId]
     );
 
@@ -185,7 +191,7 @@ const deleteAccount = async (req, res) => {
     const userId = req.user.id;
     if (!userId) return res.status(401).json({ message: "User ID is missing" });
 
-    await pool.query( `DELETE FROM users WHERE id = $1`, [userId]);
+    await pool.query(`DELETE FROM users WHERE id = ?`, [userId]);
 
     res.clearCookie("jwt", {
       httpOnly: true,
