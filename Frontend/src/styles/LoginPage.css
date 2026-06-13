@@ -21,7 +21,7 @@
   width: 100%;
   max-width: 400px;
   padding: 40px;
-  border-radius: 10px;
+  border-radius: 20px;
   border: 2px solid var(--black);
   box-shadow: 10px 10px 0px var(--black); 
   background: var(--white);
@@ -80,7 +80,7 @@
   padding: 12px 12px 12px 45px;
   border: 1px solid var(--black);
   font-size: 14px;
-  border-radius: 20px;
+  border-radius: 10px;
   outline: none;
   transition: var(--transition);
 }
