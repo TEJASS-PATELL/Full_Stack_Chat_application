@@ -16,20 +16,20 @@ const lockchat = async (req, res) => {
   try {
     const hashedPin = await bcrypt.hash(pin, 10);
 
-    const { rows: existing } = await pool.query(
-      "SELECT * FROM chat_locks WHERE locked_by_user_id = $1 AND locked_user_id = $2",
+    const [existing] = await pool.query(
+      "SELECT * FROM chat_locks WHERE locked_by_user_id = ? AND locked_user_id = ?",
       [lockedByUserId, lockedUserId]
     );
 
     if (existing.length > 0) {
       await pool.query(
-        "UPDATE chat_locks SET pin_hash = $1 WHERE locked_by_user_id = $2 AND locked_user_id = $3",
+        "UPDATE chat_locks SET pin_hash = ? WHERE locked_by_user_id = ? AND locked_user_id = ?",
         [hashedPin, lockedByUserId, lockedUserId]
       );
       res.status(200).json({ message: "Chat lock updated successfully." });
     } else {
       await pool.query(
-        "INSERT INTO chat_locks (locked_by_user_id, locked_user_id, pin_hash) VALUES ($1, $2, $3)",
+        "INSERT INTO chat_locks (locked_by_user_id, locked_user_id, pin_hash) VALUES (?, ?, ?)",
         [lockedByUserId, lockedUserId, hashedPin]
       );
       res.status(201).json({ message: "Chat locked successfully." });
@@ -49,8 +49,8 @@ const unlockchat = async (req, res) => {
   }
 
   try {
-    const { rows } = await pool.query(
-      "SELECT pin_hash FROM chat_locks WHERE locked_by_user_id = $1 AND locked_user_id = $2",
+    const [rows] = await pool.query(
+      "SELECT pin_hash FROM chat_locks WHERE locked_by_user_id = ? AND locked_user_id = ?",
       [lockedByUserId, lockedUserId]
     );
 
@@ -65,7 +65,7 @@ const unlockchat = async (req, res) => {
     }
 
     await pool.query(
-      "DELETE FROM chat_locks WHERE locked_by_user_id = $1 AND locked_user_id = $2",
+      "DELETE FROM chat_locks WHERE locked_by_user_id = ? AND locked_user_id = ?",
       [lockedByUserId, lockedUserId]
     );
 
@@ -81,8 +81,8 @@ const targetUser = async (req, res) => {
   const userIdWhoIsQuerying = req.user.id;
 
   try {
-    const { rows } = await pool.query(
-      "SELECT 1 FROM chat_locks WHERE locked_by_user_id = $1 AND locked_user_id = $2",
+    const [rows] = await pool.query(
+      "SELECT 1 FROM chat_locks WHERE locked_by_user_id = ? AND locked_user_id = ?",
       [userIdWhoIsQuerying, targetUserId]
     );
 
