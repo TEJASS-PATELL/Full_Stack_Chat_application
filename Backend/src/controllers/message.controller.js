@@ -12,9 +12,9 @@ const getUsersForSidebar = async (req, res) => {
 
     if (cachedUsers) return res.status(200).json(cachedUsers);
 
-    const { rows: filteredUsers } = await pool.query(
+    const [filteredUsers] = await pool.query(
       `SELECT id, fullname, email, profilepic, isonline AS "isOnline", lastseen AS "lastSeen"
-       FROM users WHERE id != $1`,
+       FROM users WHERE id != ?`,
       [loggedInUserId]
     );
 
@@ -36,15 +36,15 @@ const getMessages = async (req, res) => {
     const cached = cache.get(cacheKey);
     if (cached) return res.status(200).json(cached);
 
-    const { rows } = await pool.query(
+    const [rows] = await pool.query(
       `SELECT id, senderid, receiverid, text, image, createdat
        FROM messages
        WHERE 
-         (senderid = $1 AND receiverid = $2)
+         (senderid = ? AND receiverid = ?)
          OR
-         (senderid = $2 AND receiverid = $1)
+         (senderid = ? AND receiverid = ?)
        ORDER BY createdat ASC`,
-      [myId, userToChatId]
+      [myId, userToChatId, userToChatId, myId]
     );
 
     cache.set(cacheKey, rows);
@@ -73,14 +73,19 @@ const sendMessage = async (req, res) => {
       imageUrl = uploadResponse.secure_url;
     }
 
-    const result = await pool.query(
-      `INSERT INTO messages (senderid, receiverid, text, image)
-       VALUES ($1, $2, $3, $4)
-       RETURNING id, senderid, receiverid, text, image, createdat`,
+    const [result] = await pool.query(
+      `INSERT INTO messages (senderid, receiverid, text, image) VALUES (?, ?, ?, ?)`,
       [senderId, receiverId, text, imageUrl]
     );
 
-    const newMessage = result.rows[0];
+    const newMessageId = result.insertId;
+
+    const [messageRows] = await pool.query(
+      `SELECT id, senderid, receiverid, text, image, createdat FROM messages WHERE id = ?`,
+      [newMessageId]
+    );
+
+    const newMessage = messageRows[0];
 
     const normalizedMessage = {
       id: newMessage.id,
