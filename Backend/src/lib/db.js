@@ -1,10 +1,7 @@
-const { Pool } = require("pg");
+const mysql = require("mysql2/promise");
 require("dotenv").config();
 
-const pool = new Pool({
-  connectionString: process.env.INTERNAL_URL,
-  ssl: { rejectUnauthorized: false },
-});
+const pool = mysql.createPool(process.env.INTERNAL_URL);
 
 (async () => {
   try {
