@@ -4,7 +4,7 @@ async function createMessagesTable() {
   try {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS messages (
-        id SERIAL PRIMARY KEY,
+        id INT AUTO_INCREMENT PRIMARY KEY,
         senderid INT NOT NULL,
         receiverid INT NOT NULL,
         text TEXT,
