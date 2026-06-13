@@ -14,13 +14,13 @@ const protectRoute = async (req, res, next) => {
     const cachedUser = cache.get(cacheKey);
 
     if (cachedUser) {
-      await pool.query("UPDATE users SET lastseen = NOW() WHERE id = $1", [userId]);
+      await pool.query("UPDATE users SET lastseen = NOW() WHERE id = ?", [userId]);
       req.user = cachedUser;
       return next();
     }
 
-    const { rows } = await pool.query(
-      "SELECT id, fullname, email, profilepic, createdat FROM users WHERE id = $1",
+    const [rows] = await pool.query(
+      "SELECT id, fullname, email, profilepic, createdat FROM users WHERE id = ?",
       [userId]
     );
 
@@ -30,7 +30,7 @@ const protectRoute = async (req, res, next) => {
 
     cache.set(cacheKey, user, 3600); 
 
-    await pool.query("UPDATE users SET lastseen = NOW() WHERE id = $1", [userId]);
+    await pool.query("UPDATE users SET lastseen = NOW() WHERE id = ?", [userId]);
     req.user = user;
     next();
 
