@@ -1,4 +1,4 @@
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useChatStore } from "../Store/useChatStore";
 import { useAuthStore } from "../Store/useAuthStore";
 import ChatHeader from "./ChatHeader";

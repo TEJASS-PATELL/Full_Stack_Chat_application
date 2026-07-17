@@ -30,10 +30,12 @@ const App = () => {
   if (isCheckingAuth && !authUser) {
     return (
       <div className="loader-wrapper">
-        <div className="loader-content">
-          <Loader className="loader-icon" size={48} strokeWidth={2.5} />
-          <h1 className="loader-text">Initializing Chats</h1>
-          <p className="loader-subtext">Securing your connection</p>
+        <div className="loader-bars">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
       </div>
     );
