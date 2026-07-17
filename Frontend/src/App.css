@@ -13,7 +13,7 @@
 .loader-bars span {
   width: 8px;
   height: 60px;
-  background: #00bbff;
+  background: #000000;
   border-radius: 4px;
   animation: bounce 1s ease-in-out infinite;
 }
