@@ -1,12 +1,21 @@
 const mysql = require("mysql2/promise");
-require("dotenv").config();
+require("dotenv".config());
 
-const pool = mysql.createPool(process.env.INTERNAL_URL);
+const pool = mysql.createPool({
+  uri: process.env.DATABASE_URL, 
+  ssl: {
+    rejectUnauthorized: false 
+  }
+});
 
 (async () => {
   try {
-    await pool.query("SELECT NOW()");
+    const connection = await pool.getConnection();
+    await connection.query("SELECT NOW()");
+    connection.release();
+    console.log("Database connected successfully!");
   } catch (err) {
+    console.error("Database connection failed:", err.message);
     process.exit(1);
   }
 })();
